@@ -1,0 +1,82 @@
+rules_version = '2';
+// SARTHIK Room - Firestore security rules (free Spark plan: these rules ARE the security).
+// Default: nobody can read or write anything. Each collection below opens only what is needed.
+// People are identified by their sign-in e-mail; their role lives in /members/{email} (only admins edit it).
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null && request.auth.token.email is string; }
+    function email() { return request.auth.token.email.lower(); }
+    function member() { return signedIn() && exists(/databases/$(database)/documents/members/$(email())); }
+    function role() { return get(/databases/$(database)/documents/members/$(email())).data.role; }
+    function isPerson() { return member() && role() in ['admin', 'viewer']; }
+    function isAdmin() { return member() && role() == 'admin'; }
+    function isDevice() { return member() && role() == 'device'; }
+    function isReporter() { return member() && role() == 'reporter'; }
+    function str(v, n) { return v is string && v.size() <= n; }
+    function onlyKeys(keys) { return request.resource.data.keys().hasOnly(keys); }
+
+    // who may use the system (admins add people; nobody can change their own role)
+    match /members/{id} {
+      allow read: if signedIn() && (id == email() || isAdmin() || isReporter());   // the Sheet script needs WhatsApp numbers
+      allow create, update: if isAdmin() && id == id.lower() && onlyKeys(['role', 'name', 'whatsapp', 'notify'])
+                            && request.resource.data.role in ['admin', 'viewer', 'device', 'reporter']
+                            && str(request.resource.data.name, 40) && (id != email());
+      allow update: if member() && id == email() && onlyKeys(['role', 'name', 'whatsapp', 'notify'])
+                    && request.resource.data.role == resource.data.role && str(request.resource.data.name, 40);   // edit own name/WhatsApp, never own role
+      allow delete: if isAdmin() && id != email();
+    }
+    // FIRST ADMIN ONLY: the setup program makes YOU admin in the same step that creates /config/bootstrap.
+    // Once /config/bootstrap exists, this can never happen again (nobody else can make themselves admin).
+    match /members/{id} {
+      allow create: if signedIn() && id == email() && onlyKeys(['role', 'name', 'whatsapp', 'notify'])
+                    && request.resource.data.role == 'admin'
+                    && !exists(/databases/$(database)/documents/config/bootstrap)
+                    && existsAfter(/databases/$(database)/documents/config/bootstrap);
+    }
+    match /config/bootstrap {
+      allow create: if signedIn() && !exists(/databases/$(database)/documents/config/bootstrap)
+                    && getAfter(/databases/$(database)/documents/members/$(email())).data.role == 'admin';
+    }
+    // door events and laptop CCTV events: added by the board / the Sheet script, NEVER changed or deleted
+    match /events/{id} {
+      allow read: if isPerson() || isReporter();
+      allow create: if (isDevice() || isReporter())
+                    && onlyKeys(['device', 'seq', 'time', 'type', 'severity', 'person', 'name', 'detail', 'source'])
+                    && str(request.resource.data.type, 40) && str(request.resource.data.severity, 10)
+                    && str(request.resource.data.name, 60) && str(request.resource.data.detail, 200);
+      allow update: if (isDevice() || isReporter()) && request.resource.data == resource.data;   // a retry may only re-send the SAME copy
+      allow delete: if false;
+    }
+    // live status of the board (heartbeat + 15 sensors), the laptop and the Sheet script
+    match /devices/{id} {
+      allow read: if isPerson() || isReporter();
+      allow write: if (isDevice() && id.matches('door-[0-9]+')) || (isReporter() && id in ['reporter', 'laptop']);
+    }
+    // website buttons -> board. Admins write the command; the board only marks it done.
+    match /commands/{id} {
+      allow read: if isAdmin() || isDevice();
+      allow create, update: if isAdmin() && onlyKeys(['cmd', 'id', 'by', 'at', 'done_id', 'result', 'done_at'])
+                            && str(request.resource.data.cmd, 40) && request.resource.data.by == email();
+      allow update: if isDevice() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['done_id', 'result', 'done_at']);
+    }
+    // daily / weekly reports written by the Sheet script
+    match /reports/{id} {
+      allow read: if isPerson();
+      allow write: if isReporter();
+    }
+    // site settings readable by family (ThingSpeak READ keys only - never write keys)
+    match /config/{id} {
+      allow read: if isPerson();
+      allow write: if isAdmin();
+    }
+    // family chat: everyone room ('all') or private between two people
+    match /messages/{id} {
+      allow read: if isPerson() && (resource.data.to == 'all' || resource.data.from == email() || resource.data.to == email());
+      allow create: if isPerson() && onlyKeys(['from', 'to', 'text', 'at']) && request.resource.data.from == email()
+                    && str(request.resource.data.text, 1000) && str(request.resource.data.to, 80)
+                    && request.resource.data.at == request.time;
+      allow update, delete: if false;
+    }
+    match /{document=**} { allow read, write: if false; }
+  }
+}

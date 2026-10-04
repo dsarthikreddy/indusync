@@ -1,0 +1,37 @@
+SARTHIK ROOM - ADDING YOUR 15 SENSORS (Stage 2 hardware, works with v8.2 as-is)
+=============================================================================
+IMPORTANT FACT ABOUT THIS BOARD
+ The camera, RFID, OLED, LEDs, buzzer, servo, memory chip and USB use almost every pin.
+ Free pins: GPIO 38, 39, 40 - DIGITAL ONLY (on/off sensors: PIR motion, door contact, flame, rain digital).
+ No analog pin is free: the analog pins are used by the camera, and the second analog group cannot be
+ used while Wi-Fi is on. So analog sensors (gas MQ-x, LDR, sound, current ACS712, voltage, soil) go
+ through an ADS1115 board (about Rs 150) on the SAME 2 wires as the OLED:
+     ADS1115 VDD -> 3.3V   GND -> GND   SCL -> GPIO 42   SDA -> GPIO 41   ADDR -> GND  (address 0x48)
+     second ADS1115: ADDR -> 3.3V (address 0x49)   -> 8 analog inputs in total (A0-A3 on each)
+ Digital "smart" sensors (BME280/AHT20 temperature+humidity, BH1750 light) also go on SDA 41 / SCL 42.
+ Never feed more than 3.3 V into an ADS1115 input or a GPIO: 5 V sensors need a voltage divider
+ (10k + 20k) on their output.
+
+THE 15 SLOTS (already in the firmware; edit the table "v9Slots" in classync_stage1_v8_2.ino)
+ S01 chip_temp     built-in, ON      S09 motion_pir    GPIO 38
+ S02 occupancy     built-in, ON      S10 sound         ADS1115 0x49 A0
+ S03 wifi_signal   built-in, ON      S11 current       ADS1115 0x49 A1
+ S04 free_memory   built-in, ON      S12 voltage       ADS1115 0x49 A2
+ S05 temperature   ADS1115 0x48 A0   S13 gas           ADS1115 0x49 A3
+ S06 humidity      ADS1115 0x48 A1   S14 door_contact  GPIO 39
+ S07 air_quality   ADS1115 0x48 A2   S15 flame         GPIO 40
+ S08 light         ADS1115 0x48 A3
+
+TO SWITCH A SENSOR ON (example: PIR motion on GPIO 38)
+ 1. Wire it: PIR VCC -> 5V, GND -> GND, OUT -> GPIO 38 (HC-SR501 output is 3.3 V: safe).
+ 2. In the .ino, find the line starting with   {"S09", "motion_pir"   and change  false  to  true.
+ 3. Upload. Serial Monitor > type  sensors  > S09 shows ok 0 or 1.
+ Website (Sensors page), ThingSpeak (channel B field 1), Firebase and Telegram /status pick it up
+ automatically - nothing else to change.
+ Analog sensors: set enabled to true, then adjust "scale" so the number becomes real units:
+   value = raw * scale + offset   (raw is -32768..32767 for +-4.096 V; 1 V = 8000 raw)
+   e.g. LM35 temperature (10 mV per C): scale 0.0125, offset 0
+        check: 0.25 V = 2000 raw -> 2000 x 0.0125 = 25.0 C
+   Then compare once with a real thermometer: if the board says 26.0 but it is 25.0, set offset -1.0.
+ Status words: ok = good value, no_data = sensor not answering (check wires), fault = value outside
+ min/max (sensor broken or wrong scale), off = slot not enabled. A broken sensor never stops the door.

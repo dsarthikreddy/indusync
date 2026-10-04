@@ -1,0 +1,26 @@
+# ---- secrets (NEVER commit) ----
+secrets.h
+**/secrets.h
+*.env
+n8n.env
+tools/stage3_state.json
+tools/sheet_settings_code.txt
+5_n8n/
+n8n_data/
+cloud/n8n/generated/
+_backup_before_fix*/
+# ---- private data ----
+laptop_website/data/
+**/data/backups/
+*.db
+# ---- build / environments ----
+.venv/
+__pycache__/
+*.pyc
+node_modules/
+build/
+*.bin
+*.elf
+*.map
+.firebase/
+.firebaserc

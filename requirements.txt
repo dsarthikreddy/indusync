@@ -1,0 +1,8 @@
+# CLASSYNC 4.0 website v3 - libraries (installed by Install.bat)
+fastapi>=0.115      # includes the fixed Starlette (>=0.40)
+uvicorn>=0.30
+ultralytics>=8.3.0,<9
+opencv-python>=4.9
+numpy
+pyserial>=3.5
+onnxruntime>=1.17      # laptop face recognition (v3)

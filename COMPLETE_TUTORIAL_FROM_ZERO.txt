@@ -1,0 +1,679 @@
+SARTHIK ROOM - COMPLETE TUTORIAL FROM ABSOLUTE ZERO
+====================================================
+How to install, start, check, use, back up and repair EVERY part of the project.
+Written for someone who has just started. Read it once from top to bottom, then use the CONTENTS
+to jump to a part when you need it.  Keep STAGE3_SETUP_GUIDE.txt open next to this file: that one has
+the sign-up clicks; THIS one explains how to run, test and fix everything.
+
+CONTENTS
+  1. The golden rules (read first)
+  2. The big picture: what each part does, and what works WITHOUT the laptop
+  3. What to download and where
+  4. The order of work (roadmap) - how to add the cloud WITHOUT breaking what already works
+  5. ESP32 door board: install tools, upload, Serial Monitor, test card/face/QR/phone/camera/sensors
+  6. Laptop website v4: open, start, stop, restart
+  7. Firebase: open, view data, test, errors
+  8. ThingSpeak: open, view graphs, test, errors
+  9. Blynk: open, view, test, errors
+ 10. Google Sheet: open, view reports, test, errors
+ 11. Email: test and check
+ 12. Telegram: test and check
+ 13. WhatsApp: test and check
+ 14. n8n: open, run, check executions, laptop ON/OFF behaviour
+ 15. THE COMPLETE TEST CHECKLIST (tick every line)
+ 16. Daily, weekly and monthly routine
+ 17. Start / stop / restart cheat sheet
+ 18. Backups and recovery (including "undo everything" back to the old version)
+ 19. Problem finder (symptom -> fix)
+ 20. Free limits and how to watch them
+ 21. Safety and privacy rules
+
+
+=====================================================================================================
+1. THE GOLDEN RULES
+=====================================================================================================
+ 1. The DOOR IS THE BOSS. The ESP32 decides who enters, even with no internet and no laptop. Every cloud
+    service is an extra on top. If a cloud service fails, the door still works.
+ 2. Change ONE thing at a time, then test. Never fix three things at once.
+ 3. NEVER type these in the Serial Monitor while testing (they delete things):
+        clear        (deletes ALL saved faces)
+        forget <name> (deletes one person's face)
+        resetphones  (deletes all phone keys)
+        clearpasses  (forgets used visitor passes)
+    Safe commands: help, list, report, sensors, cloud, events, log, stats, wifi, phones, visitors.
+ 4. On the websites, "Start new day" / "reset" clears TODAY's attendance (faces stay). Use it only when
+    you really want a new day.
+ 5. Keys are secret. Never send them to anyone or paste them in chat/screenshots. Secret files:
+        tools\stage3_state.json    tools\sheet_settings_code.txt    5_n8n\n8n.env    secrets.h
+ 6. Before big changes: make a backup (chapter 18). It takes 2 minutes.
+ 7. If something looks broken: do NOT press random buttons. Find the symptom in chapter 19.
+ 8. Wi-Fi must be 2.4 GHz (the ESP32 cannot use 5 GHz). Phone hotspot: switch on "Maximise compatibility".
+
+
+=====================================================================================================
+2. THE BIG PICTURE
+=====================================================================================================
+ PART                  JOB (one job each)                                      RUNS ON
+ -------------------   -----------------------------------------------------   --------------------
+ ESP32 door board      Decides entry (card + face, phone key, QR visitor pass).  The board itself
+                       Saves attendance. Sends data to the cloud services.
+ Laptop website v4     CCTV camera, AI face recognition, cross-check with the    Your laptop
+                       door, photos, local control page.
+ Firebase              24/7 website, logins, database, Control buttons.          Google (free)
+ Google Sheet + script 24/7 messenger: Sheet log, emails, WhatsApp, 8 PM report. Google (free)
+ ThingSpeak            History graphs of the 15 sensors.                         MathWorks (free)
+ Blynk                 Small phone panel (present count, temperature, button).   Blynk (free)
+ Telegram              Instant alarms; /status and /open from your phone.        Telegram (free)
+ WhatsApp              Family notices + daily summary (test number: 5 people).   Meta (free)
+ Email                 Daily / weekly / monthly reports, security summaries.     Gmail (free)
+ n8n                   Weekly + monthly reports (catches up) and door watchdog.  Your laptop
+
+ WHAT WORKS WITHOUT THE LAPTOP (laptop OFF, board powered and on Wi-Fi):
+   YES: door control (card + face, QR passes, phone key), attendance saved on the board,
+        24/7 website (Firebase), Control buttons from anywhere, sensors on the website,
+        ThingSpeak graphs, Blynk panel, Telegram alarms and /status /open,
+        Google Sheet log, daily 8 PM report by email/Telegram/WhatsApp, WhatsApp arrival notices.
+ REQUIRES THE LAPTOP:
+        CCTV camera and AI recognition, photos of unknown people, the cross-check (door vs CCTV),
+        the local website (localhost:8000), n8n (weekly/monthly reports + watchdog; it catches up later).
+ WORKS WITHOUT INTERNET (board powered, router off): the door itself, attendance on the board, all
+        board commands in Serial Monitor. Events wait inside the board and upload automatically when
+        the internet comes back (nothing is lost).
+ WORKS WITHOUT WI-FI AT ALL: type  wifi off  -> the door behaves exactly like the old v6.
+ BOARD POWER OFF: nothing works (no door control). Cloud shows "door offline".
+
+
+=====================================================================================================
+3. WHAT TO DOWNLOAD AND WHERE   (all free)
+=====================================================================================================
+ ON THE LAPTOP (Windows 10/11):
+  a) 7-Zip or Windows "Extract All" - to unzip the project (built in).
+  b) Arduino IDE 2.x       https://www.arduino.cc/en/software   (Windows installer, Next, Next, Finish)
+  c) Node.js LTS           https://nodejs.org   (big green LTS button; Next, Next, Finish). Needed for the
+                           Firebase publishing and for n8n. Check later: Windows key, type cmd, Enter,
+                           type  node -v  -> shows v22 or newer.
+  d) Python                Installed for you by 2_Website_v4\Install.bat (inside the website folder).
+                           You do not install it yourself.
+  e) Google Chrome or Edge https://www.google.com/chrome  (to open all the websites)
+  f) USB driver if the board's COM port never appears:
+        CH340: https://www.wch-ic.com/downloads/CH341SER_EXE.html     CP210x: search "CP210x driver Silicon Labs"
+ ON YOUR PHONE:
+  g) Telegram              Play Store / App Store
+  h) Blynk IoT             Play Store / App Store (name: "Blynk IoT")
+  i) ntfy                  (you already have it: gives the old door phone alerts)
+  j) WhatsApp              (you already have it)
+ ACCOUNTS (all free, no card): Google (Firebase + Sheet + Gmail), MathWorks (ThingSpeak), Blynk,
+  Telegram, Meta/Facebook developer (WhatsApp, optional).
+ THE PROJECT: SARTHIK_Room_Stage3_Complete.zip -> right-click -> Extract All -> type  C:\  -> Extract.
+  You get C:\SARTHIK_Room_Stage3\ . Rename that folder to  C:\SARTHIK_Room  (shorter paths = fewer errors).
+
+
+=====================================================================================================
+4. THE ORDER OF WORK (ROADMAP)   total about 2.5 hours, can be split over days
+=====================================================================================================
+ The safe order protects what already works:
+
+  STEP A  (20 min)  Laptop website: run 2_Website_v4\Install.bat (skip if v4 already installed and you
+                    copy your old "data" folder into the new 2_Website_v4 first).      -> chapter 6
+  STEP B  (30 min)  Arduino IDE + board package 2.0.17 + libraries.                     -> chapter 5.1-5.3
+  STEP C  (10 min)  Upload v8.2 WITH EMPTY CLOUD KEYS (the zip is already like that).
+                    In this state the board behaves like your tested v8.1. TEST THE DOOR FULLY
+                    (chapter 5.6). If all good, you have a safe baseline.
+  STEP D  (60 min)  Run "Setup Stage 3.bat": Firebase, ThingSpeak, Blynk, Telegram, Sheet (WhatsApp later).
+                    (Click-by-click: STAGE3_SETUP_GUIDE.txt Part 1.)
+  STEP E  (10 min)  Upload v8.2 AGAIN (the setup filled the keys in secrets.h). Type  cloud . -> chapter 5.7
+  STEP F  (30 min)  Run the TEST CHECKLIST (chapter 15).
+  STEP G  (optional) WhatsApp (guide step 7) and n8n (chapter 14).
+
+ If anything goes wrong after Step E you can go back to the safe baseline: upload again with the cloud
+ keys empty (copy the secrets.h from before, or put "" between the quotes of the 9 cloud lines).
+ The old v8.1 folder from your earlier zip also still works (chapter 18.5).
+
+
+=====================================================================================================
+5. THE ESP32 DOOR BOARD
+=====================================================================================================
+5.1 INSTALL ARDUINO IDE AND THE BOARD PACKAGE (once; skip what you already did for v8.1)
+  1. Open Arduino IDE. Left bar: Boards Manager (chip icon) > search  esp32  > "esp32 by Espressif Systems"
+     > choose version  2.0.17  in the small drop-down (NOT 3.x) > Install. Wait until "INSTALLED".
+     If a newer version is installed: choose 2.0.17 again and install over it.
+  2. Library Manager (books icon). Install: "Adafruit GFX Library", "Adafruit SSD1306", "MFRC522" (by
+     GithubCommunity). Click "Install all" if it offers dependencies.  (BLE, Wi-Fi, Preferences and the
+     face-AI come with the board package; the QR reader is inside the sketch folder.)
+5.2 OPEN THE FIRMWARE
+  File > Open > C:\SARTHIK_Room\1_Door_Board_v8_2\classync_stage1_v8_2\classync_stage1_v8_2.ino
+  The folder also holds secrets.h, quirc.h, quirc_lib.c and partitions.csv - keep them together.
+5.3 SETTINGS (Tools menu)
+  Board: ESP32S3 Dev Module        PSRAM: OPI PSRAM        Flash Size: 16MB
+  Partition Scheme: leave as you used for v8.1 (the partitions.csv in the sketch folder is used)
+  Port: the COM port of the board.   Board package must say 2.0.17.
+5.4 CONNECT AND UPLOAD
+  1. Plug the USB cable into the board's USB port that worked for your earlier uploads (the board has two:
+     "USB-UART" and "USB-OTG" printed on its back). Windows makes a COM port. Tools > Port > choose it.
+  2. Click the right-arrow Upload button. First compile takes 3-6 minutes. Wait for "Done uploading".
+  3. If "Failed to connect": hold the BOOT button, tap EN/RST, release BOOT, press Upload again.
+  4. Tools > Serial Monitor. Bottom right: speed 115200 and "Newline". Press the EN/RST button once.
+5.5 WHAT THE SERIAL MONITOR SHOWS AT START (similar text; the order is the same)
+   ===== CLASSYNC 4.0 v8.2: RFID + FACE + QR + PHONE KEY + WEBSITE + CLOUD + 15 SENSOR SLOTS =====
+   OLED OK
+   Camera OK, sensor PID 0x2145
+   Faces loaded from permanent memory: N of 3 students
+   RC522 version 0x92 -> OK            (0x91 or 0x92 is normal)
+   Wi-Fi: connecting to "ACT" in the background ...      then   Clock set from the internet.
+   Cloud: Firebase off, ThingSpeak off, Blynk off, Telegram off. Sensors on: chip_temp occupancy wifi_signal free_memory
+ (After the cloud is set up the Cloud line says ON for the services you configured.)
+  Errors here -> Fix:
+   "OLED NOT FOUND"                    -> check OLED wires VCC/GND/SDA=41/SCL=42.
+   "Camera init FAILED" / CAM ERROR    -> switch off, re-seat the camera ribbon (lift the latch, push in, close).
+   "PSRAM not found"                   -> Tools > PSRAM > OPI PSRAM, upload again.
+   "RC522 ... NOT FOUND"               -> check the 7 RFID wires and 3.3V (not 5V).
+   Garbage letters                     -> Serial Monitor speed must be 115200.
+5.6 BASELINE TEST OF THE DOOR (do this BEFORE the cloud; it proves nothing old was damaged)
+   1. Serial: type  list  -> your students with "face saved" (or "NO FACE YET").
+   2. Tap a registered card, look at the camera 30-50 cm away in good light.
+      Expected: OLED CHECKING -> PRESENT; both LEDs on, two chirps, servo opens ~3 s, then locks.
+      Serial: "ATTENDANCE MARKED: <name>".  (First time ever for a card: it enrols 3 photos instead.)
+   3. Tap an UNKNOWN 13.56 MHz card (college ID, metro card): red LED blinks + loud alarm; OLED DENIED.
+   4. Type  report  -> shows PRESENT / ABSENT. Type  events  -> list of events.
+   5. Phone key and QR pass: test as you did before (phone near the door; pass image from
+      6_Visitor_Pass_Maker\make_pass.py shown to the camera).
+   6. New card for Rozy: type  learncard rozy , tap her card within 60 s, look at the camera.
+   Do NOT type clear / forget / resetphones / clearpasses.
+5.7 CLOUD STATUS ON THE BOARD
+   Type  cloud  (after setup, upload done, wait 1-2 minutes). Expected, similar to:
+      ---- Cloud links (keys in secrets.h; empty key = off) ----
+        firebase   ON   ok 5      failed 0     working
+        thingspeak ON   ok 3      failed 0     working
+        blynk      ON   ok 1      failed 0     working
+        telegram   ON   ok 2      failed 0     working
+        events waiting for Firebase: 0
+   A service you did not set up shows "off" (normal). A problem shows words after "failed", e.g.
+      "device login refused (check email/password)"  -> secrets.h FB_DEVICE_EMAIL / FB_DEVICE_PASS wrong.
+          Fix: run Setup Stage 3.bat again (delete  "files": true,  in tools\stage3_state.json first),
+          then upload again.
+      "not allowed (rules / members list)"  -> the door board's e-mail is not in Members as "Door board".
+          Fix: Firebase console > Firestore > Data > members > add document named
+          door-1.board@sarthik.room with fields role=device (string), name=door board (string).
+      "bad bot token" / "chat not found (send /start)"  -> chapter 12.
+      "bad token" (Blynk) -> chapter 9.     "too fast or bad key" (ThingSpeak) -> chapter 8.
+   Type  sensors  -> 15 slots. Expected: S01 chip_temp ok ~40, S02 occupancy ok 0.., S03 wifi_signal ok -50,
+      S04 free_memory ok; the rest "off". A sensor you enabled but did not wire shows "no_data" (check wires).
+5.8 CHANGING WI-FI
+   Edit secrets.h: NET1_SSID / NET1_PASS (main) and NET2_SSID / NET2_PASS (backup, e.g. your phone hotspot).
+   Keep the quotes. Upload again. Type  wifi  -> shows the board address (like http://192.168.1.50) and the door key.
+5.9 ADDING SENSORS LATER: see SENSORS_GUIDE.txt. Enable one at a time, upload, type  sensors , check.
+
+
+=====================================================================================================
+6. LAPTOP WEBSITE v4 (CCTV + local control)   address:  http://localhost:8000
+=====================================================================================================
+ FIRST TIME (in C:\SARTHIK_Room\2_Website_v4):
+   1. Double-click Install.bat (needs internet, 5-15 min). Last lines: "AI models ready", "Face recognition ready".
+      If Windows says "protected your PC": More info > Run anyway.
+   2. Double-click Turn On Autostart.bat. A Desktop icon "SARTHIK Room" appears and the website then starts by itself
+      whenever you sign in to Windows.
+   3. Double-click the Desktop icon. Browser opens. First time: create the admin account (username + password).
+   4. Menu > Settings > Door board link: ON, Over Wi-Fi, address = what the board's  wifi  command printed > Save.
+ OPEN:     Desktop icon "SARTHIK Room" (or browse to http://localhost:8000).
+ START:    Starts by itself (autostart). Or double-click "SARTHIK Room.vbs". To SEE its messages: "Start CCTV.bat".
+ STOP:     "Stop SARTHIK Room.bat".
+ RESTART:  Stop SARTHIK Room.bat, wait 5 s, then the Desktop icon.
+ CHECK:    Overview/Health pages show "door board online". Live > Start turns the camera on.
+ Messages in data\server.log, logins/refusals in data\security.log.
+ Errors -> Fix:
+   Icon does nothing                -> run Start CCTV.bat once and read the message.
+   Door commands fail               -> Control > Integrations > Door key must equal DOOR_API_KEY in secrets.h.
+   "Door board offline" in website  -> the board's address changed (router restart): type  wifi  on the board and
+                                       update Settings > Door board link.
+   Forgot password                  -> Stop SARTHIK Room.bat, delete data\users.json and data\sessions.json, open icon again.
+   Camera black                     -> close other programs using the webcam (Zoom, Teams), Live > Start again.
+ Laptop off = this website off, CCTV off. The door and the cloud keep working.
+ CCTV alerts also go to the cloud automatically after Setup step 10 (Telegram "CCTV ALERT" for unknown faces).
+
+
+=====================================================================================================
+7. FIREBASE  (your 24/7 website, logins and database)
+=====================================================================================================
+ WHAT YOU HAVE: a website  https://<your-project>.web.app  and a database (Firestore).
+ SET UP: done by "Setup Stage 3.bat" steps 1-3 (click guide: STAGE3_SETUP_GUIDE.txt).
+ OPEN THE WEBSITE: on any phone or computer, any network: https://<project>.web.app > sign in with YOUR e-mail
+   and password. Tip: browser menu > "Add to Home screen" makes an app icon.
+ PAGES: Home (present today, counters), Attendance (pick a day, download CSV), Sensors (15 tiles + graphs),
+   Control (admin: open door, new day, add card, alerts, restart), Security (alerts/warnings),
+   Messages (family chat), Health (everything at a glance + security self-check), Members (admin).
+ OPEN THE FIREBASE CONSOLE (the admin room): https://console.firebase.google.com > your project.
+   Where to look:
+     Build > Firestore Database > "Data" tab   -> the real data:
+        events/   one document per door event, id like door-1_57 (fields: type, severity, person, name, detail, time)
+        devices/door-1   live heartbeat: seen (updates every minute), sensors list, services, queue
+        devices/reporter and devices/laptop   heartbeats of the Sheet script and the laptop
+        members/  who may sign in (document name = e-mail; role admin / viewer / device / reporter)
+        commands/door-1  the last button pressed on the Control page
+        reports/  daily summaries written at 8 PM      config/site  ThingSpeak channel numbers (read keys only)
+        messages/ family chat
+     Build > Firestore Database > "Rules" tab  -> the security rules (do not edit by hand)
+     Build > Firestore Database > "Usage" tab  -> reads/writes today vs the free limit (50,000 / 20,000)
+     Build > Authentication > "Users" tab      -> logins (yours, door-1.board@..., sheet.reporter@..., family)
+     Build > Hosting                           -> your web address and release history
+ TEST (expected -> where):
+   1. Open the website, sign in -> header pill says "door online" (green).                          [website]
+   2. Tap your card + face -> within ~10 s Home lists you under "Present today".                    [website]
+      And a new document appears in events/ .                                                       [console > Data]
+   3. Wait 1 minute -> devices/door-1 "seen" time changes.                                          [console > Data]
+   4. Control > Open door -> door opens in ~10 s; "Last command" shows "done".                       [website]
+   5. Health > "Run security check" -> every line "blocked" ("6 of 6 blocked" for admin).           [website]
+ ADD A FAMILY MEMBER (2 places, both needed):
+   a) Website > Members > e-mail, name, role Viewer, optional WhatsApp (digits only, e.g. 919876543210) > Add.
+   b) Console > Authentication > Users > Add user > same e-mail + a password > give them the password.
+ REMOVE A MEMBER: Members page > Remove, and Authentication > Users > the three dots > Delete account.
+ CHANGE MY PASSWORD / FORGOT IT: Authentication > Users > three dots > Reset password (sends a mail).
+ REPUBLISH THE WEBSITE (only if you changed website files): open cmd in C:\SARTHIK_Room\4_Cloud_Website and run
+        npx -y firebase-tools deploy --only firestore,hosting
+ COMMON ERRORS -> FIX:
+   "Wrong e-mail or password"          -> check spelling; or reset password (above).
+   "This account is not on the family list" -> add the e-mail on the Members page (admin) first.
+   Page says "Almost there / not connected" -> config.js empty: run Setup Stage 3 again (step firebase) and re-deploy.
+   Header "door offline"               -> board off / no Wi-Fi / cloud error: on the board type  cloud .
+   "Events: permission-denied" toast   -> your account has no member entry or wrong role.
+   Nothing new in events/ but door works -> board  cloud  line for firebase shows the reason (chapter 5.7).
+   Usage tab near 50,000 reads         -> close extra browser tabs of the website; limits reset daily.
+ SAFETY: after setup untick Authentication > Settings > User actions > "Enable create (sign-up)".
+
+
+=====================================================================================================
+8. THINGSPEAK  (history graphs for the sensors)
+=====================================================================================================
+ OPEN: https://thingspeak.mathworks.com > Sign in > Channels > My Channels.
+ YOU HAVE 2 CHANNELS (made by Setup step 4):
+   "SARTHIK Room sensors A (1-8)"  Field1 chip_temp, 2 occupancy, 3 wifi_signal, 4 free_memory,
+                                   5 temperature, 6 humidity, 7 air_quality, 8 light
+   "SARTHIK Room sensors B (9-15)" Field1 motion_pir, 2 sound, 3 current, 4 voltage, 5 gas,
+                                   6 door_contact, 7 flame, 8 spare
+ CHECK OUTPUT:
+   1. Click a channel name > "Private View" tab -> charts per field. "Last entry: ... ago" at the top.
+   2. Expected: Channel A fields 1-4 get a point every ~40 s as soon as the board is online (fields 5-8 stay
+      empty until you wire those sensors). Channel B stays empty until you enable a B sensor.
+   3. "Data Import/Export" tab > Download CSV to keep a copy.
+   4. The website's Sensors page draws the same history (needs ThingSpeak configured).
+ COMMON ERRORS -> FIX:
+   Board  cloud  shows "thingspeak ... no answer"   -> internet or ThingSpeak down; it retries by itself.
+   "too fast or bad key"                            -> one-off after restart is normal; if constant, the WRITE key in
+                                                       secrets.h is wrong -> run Setup again (step files) + upload.
+   Charts empty after 10 minutes                    -> check  sensors  on the board shows "ok" for that sensor.
+   Message "channel limit"                          -> free accounts allow 4 channels; delete old test channels.
+   Graph looks flat/odd                             -> a sensor shows fault/no_data on the board (wiring/scale).
+
+
+=====================================================================================================
+9. BLYNK  (small phone panel)
+=====================================================================================================
+ SET UP: STAGE3_SETUP_GUIDE.txt step 5 (template, 5 virtual pins, device, token). The token went into secrets.h.
+ DATA PINS: V0 online(1), V1 present today, V2 temperature, V3 open alerts, V10 "Open door" button.
+ OPEN: https://blynk.cloud > Devices > click your device > tabs: Dashboard (widgets), Timeline, Device Info.
+       Phone: Blynk IoT app > the device.
+ HOW OFTEN: the board updates Blynk every 3 minutes (free-plan limit). The numbers are therefore up to 3 min old.
+ IMPORTANT, HONEST NOTE: the board talks to Blynk with short web requests, not a permanent connection. So Blynk may
+   show the device as "Offline" even though values update. That is expected. If the Switch widget looks greyed out
+   while "Offline", press the button through this link instead (replace TOKEN with your 32-letter token):
+        https://blynk.cloud/external/api/update?token=TOKEN&V10=1
+   Open it in a browser. I could not test Blynk's live app here, so please verify it on your phone (below).
+ TEST (safe):
+   1. Wait up to 3 min. Dashboard shows V1 = present count, V2 = temperature, V3 = alerts.       [Blynk dashboard]
+   2. Open-door test: set V10 to 1 (switch or the link above) -> within 3 minutes the door opens ONCE and V10 goes back
+      to 0. Serial Monitor prints ">>> BLYNK: open door button".                                  [Serial + door]
+ COMMON ERRORS -> FIX:
+   Board  cloud  says blynk "bad token"      -> token wrong. Blynk > Devices > device > Device Info > copy token again;
+                                                run Setup (delete "blynk": ... line in stage3_state.json) and upload.
+   Values never change                       -> template datastreams missing (V0,V1,V2,V3,V10 must exist, exact numbers).
+   Door opens late                           -> normal: up to 3 min. Use the website (10 s) or Telegram /open (15 s).
+   Message limit warning                     -> free plan ~100,000/month; the board uses about 5 per 3 minutes (~72,000 a month).
+
+
+=====================================================================================================
+10. GOOGLE SHEET  (24/7 messenger and record book)
+=====================================================================================================
+ SET UP: STAGE3_SETUP_GUIDE.txt step 9. ALSO DO THIS ONCE (time zone, so "8 PM" means 8 PM India time):
+   Sheet > Extensions > Apps Script > gear icon "Project Settings" > Time zone > (GMT+05:30) India Standard Time > Save.
+   And Sheet > File > Settings > Time zone > India.
+ OPEN: https://drive.google.com > "SARTHIK Room" sheet (bookmark it).
+ TABS INSIDE THE SHEET:
+   Events   every door/CCTV event (Time, Device, Type, Severity, Person, Name, Detail, Source). New rows every 5 min.
+   Daily    one row per person per day (first/last entry, count), written at about 8 PM.
+   Summary  weekly/monthly figures (made when n8n asks, or when you run them).
+   Log      messages about problems (WhatsApp errors, login errors, daily report done).
+ MENU "SARTHIK Room" (appears after reloading the sheet):
+   1. Enter settings      -> paste the settings code (Ctrl+V). Needs doing once, or when keys change.
+   2. Start automatic jobs-> creates the 2 timers (every 5 min + daily ~8 PM). Run once. Safe to run again.
+   3. Test everything now -> checks Firebase login, Telegram, E-mail, WhatsApp and shows the web-address key.
+   Send today's report now-> makes the daily report immediately (email + Telegram + WhatsApp to admins + Daily rows).
+ THE BEHIND-THE-SCENES SCREENS (Extensions > Apps Script, left sidebar):
+   Triggers (alarm-clock icon)  -> should list 2 triggers: route (every 5 minutes) and dailyReport (day timer ~8-9 PM).
+   Executions (list icon)       -> every run with status Completed / Failed and the error text. First place to look.
+   Project Settings > Script Properties -> your hidden settings (do not share).
+ TEST (expected -> where):
+   1. Menu 3 "Test everything now" -> "Firebase login: OK, Members readable: OK, Telegram: ok, E-mail: ok, WhatsApp: ok/off".
+   2. Tap a card; within 5 min a new row appears in the Events tab.                                [Sheet > Events]
+   3. Menu "Send today's report now" -> rows in Daily + an e-mail + Telegram text.                  [Sheet > Daily, Gmail]
+   4. Executions shows "Completed" for route every 5 minutes.                                        [Apps Script]
+ COMMON ERRORS -> FIX:
+   "Authorization required"             -> run any menu item, Review permissions > your account > Advanced > Go to ... (unsafe) > Allow.
+   Events tab stays empty               -> Triggers list is empty: menu 2 "Start automatic jobs". Or Log tab shows the error.
+   "Firebase login failed"              -> settings code not saved: menu 1 and paste again (copy again from
+                                           tools\sheet_settings_code.txt).
+   "Firebase GET ... -> 403"            -> the Sheet's login must be in Members as "Sheet script" (role reporter).
+   Daily report at a wrong time         -> time zone not set (see above).
+   "Exceeded maximum execution time"    -> rare; just wait for the next run.
+   You edited Code.gs                   -> Deploy > Manage deployments > pencil > Version: New version > Deploy (keeps the URL).
+   Laptop webhook not working           -> Web app "Who has access" must be "Anyone"; URL must end with /exec.
+
+
+=====================================================================================================
+11. EMAIL
+=====================================================================================================
+ WHO SENDS: your own Google account (through the Sheet script). WHO RECEIVES: the address you gave in Setup
+   step 8 ("REPORT_EMAIL"; you can give several, comma separated, by running Sheet menu 1 one-by-one).
+ EMAILS YOU GET:
+   "SARTHIK Room daily report <date>"   every day ~8 PM (table of who came, visitors, alerts)
+   "SARTHIK Room: N security alert(s)"  within 5 min of a fake pass / locked card / proxy / phone refused
+   "SARTHIK Room Weekly/Monthly report" when n8n runs them
+   "SARTHIK Room test"                  from Sheet menu 3
+ SAFE TEST: Sheet > SARTHIK Room > 3. Test everything now -> mail "SARTHIK Room test" in Inbox (check Spam too;
+   if there press "Not spam").
+ ERRORS -> FIX: no mail -> check REPORT_EMAIL spelling (Sheet menu 1); Google limit ~100 mails/day (we send few);
+   "Service invoked too many times" -> wait until tomorrow; no daily mail -> Triggers missing (menu 2).
+
+
+=====================================================================================================
+12. TELEGRAM
+=====================================================================================================
+ SET UP: STAGE3_SETUP_GUIDE.txt step 6. Your bot: the name you chose (@something_bot). Only YOUR chat can command it.
+ WHAT YOU GET:
+   Instant alarm (within ~10 s) for: fake visitor pass, 3 wrong faces (card locked), proxy blocked,
+        phone refused, unknown card.   Message starts with  SECURITY ALERT .
+   "CCTV ALERT" when the laptop sees an unknown face (laptop on).
+   Daily summary at ~8 PM, door-offline messages from n8n (laptop on).
+   Commands you can send:  /status (present count + sensors)   /open (opens the door once)   /help
+ SAFE TESTS:
+   1. Send  /status  -> reply within ~15 s with "SARTHIK Room door / Present: x/3 ..." and sensor values.
+   2. Tap an unknown card (not registered) -> alarm sound on the board + Telegram "SECURITY ALERT unknown_card ...".
+   3. Sheet menu 3 -> message "SARTHIK Room test from the Google Sheet. It works."
+   4. /open only when you are ready: the door opens once for 3 s.
+ ERRORS -> FIX:
+   No reply to /status          -> wait 15-30 s. Then on the board type  cloud : telegram line shows the reason.
+   "chat not found (send /start)" -> open your bot in Telegram and press START; then restart the board.
+   "bad bot token"              -> token copied wrongly: BotFather > /mybots > your bot > API Token; re-run Setup (telegram).
+   Nothing at all, cloud shows ok -> you are chatting with a different bot; open the bot whose name Setup printed.
+   Someone else sends commands  -> they are ignored on purpose (only your chat number works).
+
+
+=====================================================================================================
+13. WHATSAPP  (optional)
+=====================================================================================================
+ FREE TEST NUMBER LIMITS: only up to 5 pre-approved recipient numbers; only "template" messages.
+ SET UP: STAGE3_SETUP_GUIDE.txt step 7 (Meta app, add numbers, permanent token, template room_update).
+ WHAT YOU GET: (a) arrival notices ("rozy arrived at 18:42 (card + face)") for people listed in NOTIFY_PEOPLE,
+   sent to family members who have a WhatsApp number on the Members page;  (b) security alerts to ADMINS;
+   (c) the 8 PM daily summary to ADMINS.   All are sent by the Sheet script every 5 minutes / at 8 PM, so they
+   arrive up to 5 minutes after the event (not instantly: use Telegram for instant).
+ UNTIL room_update IS "Active" the Sheet uses  hello_world : the message will say only "Hello World".
+   That proves delivery works; real texts start when the template name is set to room_update
+   (Sheet menu 1 -> WhatsApp template name -> room_update).
+ SAFE TEST: Sheet > SARTHIK Room > 3. Test everything now -> "WhatsApp: ok" and a message arrives in WhatsApp on the
+   admin's phone (chat named like "Test Number").
+ WHERE TO CHECK OUTSIDE WHATSAPP:
+   developers.facebook.com > My Apps > your app > WhatsApp > API Setup (numbers, Phone number ID)
+   business.facebook.com > WhatsApp Manager > Message templates (status: In review / Active / Rejected)
+   Sheet > Log tab (error codes).
+ ERRORS -> FIX:
+   131030 "recipient not in allowed list"   -> API Setup > To > Manage phone number list > add and verify that number.
+   132001 / 132000 "template does not exist / params" -> template name wrong, not approved yet, or language differs
+                                               (must be English). Use hello_world until Active.
+   190 / "access token expired"             -> you used the 24-hour token. Make the System User token (never expires).
+   100 "invalid parameter"                  -> Phone number ID wrong (use the ID, not the phone number).
+   Rejected template                        -> re-create with a clear Utility text; avoid links and promotion.
+   "off" in the test                        -> WhatsApp not set up: normal, everything else still works.
+
+
+=====================================================================================================
+14. n8n  (weekly + monthly reports and door watchdog; runs on the laptop)
+=====================================================================================================
+ INSTALL AND START: double-click  5_n8n\Start n8n.bat.
+   First time: downloads n8n (5-10 min) and imports both workflows. Keep the black window open (minimise it).
+   Then the browser opens http://localhost:5678 (wait 1 minute and press F5 if it shows an error).
+   First time only: create the local owner account (any e-mail/password - stays on your laptop).
+ ACTIVATE (once): left menu "Workflows" (Overview) > open "SARTHIK Room - weekly and monthly reports" > switch the
+   toggle (Inactive -> Active; newer versions call the button "Publish") > go back > same for
+   "SARTHIK Room - door watchdog".
+ RUN NOW (test): open a workflow > button "Execute workflow" -> the "Send due reports" / "Check door board" box turns
+   GREEN and you can click it to see the output (e.g. "sent": ["Weekly report: ..."]).
+ CHECK PAST RUNS: in the workflow, tab "Executions" (or left menu "Executions"): green = success, red = error.
+   Click a red one to read the error message. (We keep failed runs; successful runs are not stored to save space.)
+ WHAT EACH ONE DOES:
+   weekly/monthly: every hour it checks "is a weekly (7 days) or monthly report due?" and if yes asks the Sheet to
+        make it (Summary tab, e-mail, Telegram). If the laptop was OFF at that time, it sends it when you next turn
+        n8n on (catch-up).
+   watchdog: every 10 minutes it asks the Sheet "is the door board online?" and tells you ONCE on Telegram + e-mail
+        when it goes offline for >5 minutes, and once when it is back.
+ LAPTOP ON/OFF BEHAVIOUR:
+   Laptop ON + Start n8n.bat window open: both workflows run on schedule.
+   Laptop OFF or window closed: nothing runs. Nothing is lost: on the next start the hourly job catches up the
+        weekly/monthly reports (the first run happens at the next hour, or press Execute workflow to catch up now).
+        The watchdog does not look back in time (it reports the current state).
+   Door board offline while laptop OFF: you are NOT told (no laptop = no watchdog). The Health page of the 24/7
+        website still shows "door offline".
+ STOP n8n: close the black window (or press Ctrl+C in it).  RESTART: close it, then Start n8n.bat again.
+ n8n is reachable only from this laptop (127.0.0.1), never from the internet. Your n8n data is in 5_n8n\n8n_data.
+ ERRORS -> FIX:
+   "SR_SHEET_URL / SR_SHEET_KEY missing"     -> you did not start with Start n8n.bat, or Setup step 10 not done.
+   "access to env vars denied"               -> start with Start n8n.bat (it sets the permission).
+   "weekly failed: wrong key"                -> Sheet's HOOK_KEY differs: run Setup again (sheet step) so both match.
+   Red execution "timeout"                   -> the Sheet was slow; run it again with Execute workflow.
+   Browser cannot open localhost:5678        -> wait; check the black window shows "Editor is now accessible".
+   "npx is not recognised"                   -> install Node.js (chapter 3c), close and reopen.
+   Port 5678 busy                            -> n8n already running in another window; close it first.
+
+
+=====================================================================================================
+15. THE COMPLETE TEST CHECKLIST   (tick every line; about 40 minutes; nothing here deletes data)
+=====================================================================================================
+ Legend:  Expected -> Where to check -> Common error -> Fix.   "S" = Serial Monitor of the board.
+
+ --- A. DOOR BASELINE (must still behave exactly as before) -----------------------------------------
+ [ ] A1 Registered card + face
+        Expected: OLED PRESENT, both LEDs, 2 chirps, door opens 3 s | Where: board, S ">>> ATTENDANCE MARKED"
+        Error: face does not match -> look straight, 30-50 cm, more light | after 3 wrong: card locked 30 s (normal).
+ [ ] A2 Unknown card
+        Expected: red LED + alarm, OLED DENIED | S ">>> ACCESS DENIED" | Fix: none needed (it is correct).
+ [ ] A3 Visitor QR pass (fresh pass)   Expected: door opens ONCE | showing it again: refused (used) | fake image: alarm.
+ [ ] A4 Phone key near the door        Expected: opens hands-free (as v8.1) | Fix: type  phones  to check pairing/signal.
+ [ ] A5 Type  report  -> PRESENT list correct.   Type  events  -> recent events listed.
+ [ ] A6 Type  wifi off  then tap card -> works like v6.  Type  wifi on  -> Wi-Fi returns.  (proves door independence)
+
+ --- B. BOARD CLOUD STATUS ---------------------------------------------------------------------------
+ [ ] B1 Type  cloud  -> all services you set up show "working"; "events waiting" is 0 (or small and falling).
+        Error: words after "failed" -> see chapter 5.7.
+ [ ] B2 Type  sensors -> S01-S04 ok.            Error: fault/no_data on S01-S04 -> restart the board.
+
+ --- C. FIREBASE + 24/7 WEBSITE ----------------------------------------------------------------------
+ [ ] C1 Phone on MOBILE DATA (not home Wi-Fi): open https://<project>.web.app, sign in -> pill "door online".
+ [ ] C2 Tap card + face -> Home shows you present within ~10 s; Firestore events/ has a new document.
+ [ ] C3 Console > Firestore > Data > devices/door-1 : "seen" updates each minute.
+ [ ] C4 Attendance page: pick today -> your row; "Download CSV" works.
+ [ ] C5 Sensors page: tiles for S01-S04 show numbers; others "off".
+ [ ] C6 Control > Open door -> door opens in ~10 s; Last command = done.
+ [ ] C7 Messages: send "test" -> appears; open the site on another phone/member -> it arrives.
+ [ ] C8 Health > Run security check -> "N of N blocked", no "ALLOWED".  (If any line says ALLOWED: stop and re-deploy rules:
+        npx -y firebase-tools deploy --only firestore  from the 4_Cloud_Website folder.)
+ [ ] C9 Viewer account (a family member) sees NO Control and NO Members tab.
+
+ --- D. THINGSPEAK -----------------------------------------------------------------------------------
+ [ ] D1 Channel A > Private View: points arrive about every 40 s in fields 1-4 ("Last entry" is recent).
+ [ ] D2 Website Sensors page shows history graphs (after ~5 minutes).
+
+ --- E. BLYNK -----------------------------------------------------------------------------------------
+ [ ] E1 Within 3 min: V1/V2/V3 show numbers on the Blynk dashboard (device may say Offline: normal).
+ [ ] E2 V10 = 1 (switch or the link in chapter 9) -> door opens once within 3 min; V10 returns to 0.
+
+ --- F. TELEGRAM -------------------------------------------------------------------------------------
+ [ ] F1 /status -> reply with present count and sensors (~15 s).
+ [ ] F2 Tap an unregistered card -> "SECURITY ALERT unknown_card" within ~10 s.
+ [ ] F3 A stranger/other account sends /open to the bot -> NOTHING happens (this is correct).
+
+ --- G. GOOGLE SHEET + EMAIL -------------------------------------------------------------------------
+ [ ] G1 Menu 3 "Test everything now" -> Firebase login OK, Members OK, Telegram ok, E-mail ok, WhatsApp ok/off.
+ [ ] G2 Triggers page lists 2 triggers.   Executions shows Completed every ~5 min.
+ [ ] G3 Events tab gets rows within 5 min of a card tap.
+ [ ] G4 "Send today's report now" -> Daily rows + mail "daily report" in Gmail + Telegram summary.
+ [ ] G5 Fake QR pass -> within 5 min an e-mail "security alert" arrives.
+
+ --- H. WHATSAPP (if set up) -------------------------------------------------------------------------
+ [ ] H1 Menu 3 -> a WhatsApp message arrives on the admin phone.
+ [ ] H2 Tap Rozy's card (when "rozy" is in NOTIFY_PEOPLE) -> family numbers get the arrival notice within ~5 min.
+
+ --- I. n8n (laptop on) ------------------------------------------------------------------------------
+ [ ] I1 Start n8n.bat -> http://localhost:5678 opens; both workflows Active.
+ [ ] I2 Execute workflow on each -> green boxes, no red.
+ [ ] I3 Website Health page: "n8n" shows a recent time.
+ [ ] I4 (optional, 12 min) Unplug the board: Telegram + e-mail "Door board is OFFLINE" arrives once; plug in: "back online".
+
+ --- J. LAPTOP WEBSITE ------------------------------------------------------------------------------
+ [ ] J1 http://localhost:8000 opens; Health shows door board online; Live > Start shows the camera.
+ [ ] J2 Show an unknown face to the CCTV camera (laptop on) -> Telegram "CCTV ALERT" (within ~15 s).
+
+ --- K. FAILURE DRILLS (proves nothing breaks) --------------------------------------------------------
+ [ ] K1 Switch OFF the laptop: tap card -> door works; the phone website still shows the entry (C1/C2 again).
+ [ ] K2 Turn OFF the router for 5 minutes: card + face still opens the door. Router ON again: within minutes
+        "events waiting" (cloud command) drops to 0 and the website shows the entries made meanwhile.
+ [ ] K3 Close the Telegram app / mute it: nothing breaks.
+
+
+=====================================================================================================
+16. DAILY, WEEKLY, MONTHLY ROUTINE
+=====================================================================================================
+ EVERY DAY (2 minutes, from your phone):
+   - Open the website: pill is green "door online"; Home counters make sense; Security page: any alert today?
+   - Telegram: you will have the 8 PM summary. E-mail has the daily report.
+   - Nothing to start: board is always on; laptop optional.
+   - New day: Control > Start new day (morning) - same as before.
+ EVERY WEEK (5 minutes):
+   - Health page: all services "working"; "Events waiting" 0.
+   - Sheet: Log tab has no repeated errors; Executions all "Completed".
+   - If you use n8n: start it on the laptop at least once a week (reports catch up).
+ EVERY MONTH (10 minutes):
+   - Backup (chapter 18). Download the Sheet's Events tab (File > Download > Excel).
+   - Firebase Usage tab: far below the limits.
+   - ThingSpeak channel: Data Import/Export > Download CSV (optional).
+ AFTER A POWER CUT: nothing to do. The board restarts by itself, reconnects, and uploads waiting events.
+
+
+=====================================================================================================
+17. START / STOP / RESTART CHEAT SHEET
+=====================================================================================================
+ PART               START                              STOP                          RESTART
+ ESP32 board        plug in USB / power                unplug                        EN/RST button, or Serial  restart
+                                                                                     or Control > Restart board
+ Laptop website     Desktop icon (autostart)           Stop SARTHIK Room.bat         Stop, wait 5 s, icon
+ n8n                5_n8n\Start n8n.bat                close its window              close, Start n8n.bat
+ Firebase website   always on (Google)                 -                             nothing to restart
+ Google Sheet jobs  Sheet menu 2 "Start automatic jobs"  Apps Script > Triggers > delete  menu 2 again
+ ThingSpeak/Blynk   always on                          -                             -
+ Telegram/WhatsApp  always on                          -                             -
+ Wi-Fi off/on       Serial  wifi on                    Serial  wifi off              -
+ Order when everything was off: 1) router  2) board  3) laptop (website starts itself)  4) Start n8n.bat.
+
+
+=====================================================================================================
+18. BACKUPS AND RECOVERY
+=====================================================================================================
+18.1 WHAT TO BACK UP (monthly, and before any change)
+   a) LAPTOP WEBSITE: plug a USB drive, double-click 2_Website_v4\Backup to USB.bat (faces, photos, database).
+      The website also keeps its own 14 automatic backups in data\backups. Unplug the USB afterwards.
+   b) YOUR KEYS (copy to the USB too; keep the USB private):
+        tools\stage3_state.json, tools\sheet_settings_code.txt, 5_n8n\n8n.env,
+        1_Door_Board_v8_2\...\secrets.h, and a piece of paper with your website password.
+   c) HISTORY DATA: Google Sheet > File > Download > Microsoft Excel (.xlsx). Website > Attendance > Download CSV.
+   d) n8n: the folder 5_n8n\n8n_data (optional; workflows can be re-imported).
+   e) Cloud copies exist already: Firestore holds all events; the Sheet holds a second copy in Events.
+   The board's saved faces live inside the board; they cannot be copied out. If the board is erased you simply
+   enrol again (tap card, look at camera).
+18.2 RECOVERY - "the board was replaced or erased"
+   Upload the firmware again with the same secrets.h. Cloud events continue. Faces: type  list  and tap each card
+   to enrol again. Cards stay registered in the code; Rozy's card: learncard rozy.
+18.3 RECOVERY - "laptop died / reinstalled Windows"
+   Install again (chapter 3), unzip, run 2_Website_v4\Install.bat, copy your backup "data" folder into
+   2_Website_v4\data, run Turn On Autostart.bat. Run "Setup Stage 3.bat" ONLY if tools\stage3_state.json is lost:
+   copy the saved one back first and Setup will skip finished steps. n8n: Start n8n.bat re-imports workflows.
+18.4 RECOVERY - "forgot the website password" / "member locked out"
+   Console > Authentication > Users > three dots > Reset password. If YOU (admin) are locked out and have no
+   reset mail: Authentication > Users > Add user (new e-mail), then Firestore > members > add that e-mail with
+   role admin, name, and sign in with it.
+18.5 UNDO EVERYTHING (go back to the old working version)
+   Keep your earlier SARTHIK_Room_v4_Complete.zip. Upload 1_Door_Board_v8_1 to the board. That is the
+   version you tested before; the cloud simply stops receiving data. Nothing else needs to change.
+   Or stay on v8.2 and switch the cloud off: empty the 9 cloud lines in secrets.h and upload.
+18.6 RECOVERY - "Google Sheet script stopped / deleted"
+   Make a new Sheet, repeat guide step 9 (Code.gs, deploy, settings code from tools\sheet_settings_code.txt,
+   menu 2). Paste the NEW web app URL into n8n.env (SR_SHEET_URL=...) and into the laptop website's
+   Control > Integrations > Webhook (add  ?key=  and the same HOOK_KEY as before - it is in the settings code).
+18.7 RECOVERY - "Firebase project deleted by mistake"
+   Create a new project, delete  "firebase", "deploy", "accounts", "thingspeak" ... lines from
+   tools\stage3_state.json "done" list (or delete the file) and run Setup Stage 3 again. History in the Sheet stays.
+18.8 BEFORE CHANGING WI-FI OR KEYS: copy secrets.h to secrets_backup.h (outside the sketch folder) first.
+
+
+=====================================================================================================
+19. PROBLEM FINDER
+=====================================================================================================
+ SYMPTOM                                       LIKELY CAUSE                          FIX
+ --------------------------------------------  ------------------------------------  -----------------------------------
+ Website says "door offline"                   board off / Wi-Fi / Firebase error     Board:  cloud  and  wifi ; check router
+ Cards work but nothing on the website         Firebase keys wrong / rules             cloud  shows the words; chapter 5.7
+ Telegram silent                               no /start, wrong token                 chapter 12
+ Nothing in Sheet Events                       triggers missing                       Sheet menu 2; Executions tab
+ Daily report at wrong hour                    time zone                              chapter 10 (set India time)
+ WhatsApp "Hello World" only                   template not Active yet                wait; then set room_update
+ WhatsApp nothing                              number not in allowed list / token      chapter 13 errors
+ Blynk shows Offline                           normal (HTTP updates)                  see chapter 9 note
+ ThingSpeak empty                              wrong write key / sensors off          chapter 8
+ n8n red executions                            env missing / key mismatch             chapter 14 errors
+ Face "does not match" often                   light / distance / angle               30-50 cm, front light, re-enrol if needed
+ Door opened by phone key unexpectedly         signal level                           type blecal to recalibrate (as before)
+ Board restarts by itself                       weak power / cable                     use a good 5V 2A adapter and short cable
+ OLED blank                                     wiring                                 SDA 41 / SCL 42 / VCC / GND
+ Upload fails                                   wrong port / not in boot mode          hold BOOT, tap EN, upload again
+ Compile error "HTTPClient"/"WiFiClientSecure"  wrong board package                   use esp32 2.0.17
+ Compile error "FB_API_KEY"                     old secrets.h from v8.1               use the v8.2 secrets.h
+ Everything stopped after a Windows update      laptop restarted, site off             open Desktop icon; Start n8n.bat
+ Free limit message (Firebase/Blynk)            too many tabs or fast polling          close tabs; limits reset daily/monthly
+ Unsure what happened                           -                                      Sheet > Log tab, Apps Script > Executions,
+                                                                                       board  events , data\server.log
+
+
+=====================================================================================================
+20. FREE LIMITS (what the project uses vs the free allowance)
+=====================================================================================================
+ Firebase Firestore   free 50,000 reads + 20,000 writes per day.  Board uses ~17,000 reads (button polling every 10 s,
+                      incl. rule checks) and ~1,500 writes per day. Each open website tab adds some reads.
+ ThingSpeak           free ~8,200 messages/day; the board sends one every 20 s alternating channels (<= 4,300/day).
+ Blynk                free ~100,000 messages/month; the board uses ~5 per 3 minutes.
+ Telegram             no practical limit for this use (the board queues max 4 urgent messages to avoid spam).
+ WhatsApp (test no.)  5 recipients; template messages only.
+ Google Apps Script   free accounts: 90 min of script time per day; this uses ~10 min. 100 mails/day.
+ Where to watch: Firebase > Firestore > Usage. ThingSpeak channel > Private View counts. Blynk > Device > Timeline.
+
+
+=====================================================================================================
+21. SAFETY AND PRIVACY RULES
+=====================================================================================================
+ - Never share: secrets.h, tools\stage3_state.json, sheet_settings_code.txt, n8n.env, bot token, WhatsApp token,
+   Blynk token, ThingSpeak write keys, passwords. If one leaks: create a new one in that service, then run
+   Setup again for that step and upload the board again.
+ - After setup untick "Enable create (sign-up)" in Firebase Authentication.
+ - Only add family members you trust; viewers cannot control the door, admins can.
+ - Photos and face data stay on your laptop / board. They are never uploaded to the cloud.
+ - The Health page's security self-check should always show "blocked". Run it after any change to the rules.
+ - The board talks to cloud services without checking certificates (usual on ESP32); access still needs its own login.
+ - Do not publish your website link, your bot name or screenshots with keys on social media.
+ - If the door is ever opened wrongly: Security page + Sheet Events tab + board  events  show who/when.
+
+END OF TUTORIAL

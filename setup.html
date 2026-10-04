@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#070b10">
+<title>First-time setup - SARTHIK Room</title>
+<link rel="icon" href="/favicon.ico">
+<style>
+:root{--bg:#070b10;--line:#1f2d3b;--text:#e8eef4;--muted:#8a9aab;--accent:#22d3ee;--bad:#f87171;--ok:#4ade80}
+*{box-sizing:border-box}html,body{height:100%}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--text);
+background:radial-gradient(1200px 600px at 10% -10%,#0e2a36 0,transparent 60%),var(--bg);display:flex;align-items:center;justify-content:center;padding:24px}
+.card{width:100%;max-width:440px;background:linear-gradient(180deg,#111c26,#0d151d);border:1px solid var(--line);border-radius:20px;padding:30px 26px;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+h1{font-size:20px;margin:0 0 6px}p{color:var(--muted);font-size:14px;line-height:1.55;margin:0 0 8px}
+label{display:block;font-size:13px;color:var(--muted);margin:14px 0 6px}
+input{width:100%;padding:13px 14px;border-radius:12px;border:1px solid var(--line);background:#0a1118;color:var(--text);font-size:16px;outline:none}
+input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(34,211,238,.15)}
+.meter{height:6px;border-radius:6px;background:#16222e;margin-top:8px;overflow:hidden}.meter i{display:block;height:100%;width:0;transition:.25s}
+.hint{font-size:12px;color:var(--muted);margin-top:6px}
+button{width:100%;margin-top:20px;padding:14px;border:0;border-radius:12px;background:linear-gradient(90deg,#22d3ee,#0ea5e9);color:#04202a;font-weight:700;font-size:16px;cursor:pointer}
+button:disabled{opacity:.6}.err{min-height:20px;color:var(--bad);font-size:14px;margin-top:12px}
+/* SARTHIK Room design system v4 (sign-in / setup / request / welcome) */
+:root{--bg:#f5f5f7;--card:#fff;--line:#e3e3e8;--text:#1d1d1f;--muted:#6e6e73;--accent:#0071e3;--bad:#d70015;--ok:#1a9e4b;--field:#f2f2f5;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#000;--card:#161618;--line:#2c2c2e;--text:#f5f5f7;--muted:#98989d;--accent:#2997ff;--bad:#ff453a;--ok:#30d158;--field:#232326;color-scheme:dark}}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI Variable Text","Segoe UI",Inter,Roboto,sans-serif!important;
+  background:var(--bg)!important;color:var(--text)!important;-webkit-font-smoothing:antialiased}
+h1,h2{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI Variable Display","Segoe UI",Inter,sans-serif;letter-spacing:-.022em;font-weight:700}
+.card{background:var(--card)!important;border:1px solid var(--line)!important;border-radius:24px!important;box-shadow:0 1px 2px rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.08)!important;
+  animation:rise .4s cubic-bezier(.2,.8,.2,1)}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.logo{background:var(--text)!important;border:0!important}.logo svg circle{stroke:var(--bg)!important}.logo svg circle:last-child{fill:var(--bg)!important}
+input[type=text],input[type=password],input[type=email],textarea,select{background:var(--field)!important;border:1px solid transparent!important;color:var(--text)!important;border-radius:12px!important}
+input:focus,textarea:focus{border-color:var(--accent)!important;box-shadow:0 0 0 4px rgba(0,113,227,.15)!important}
+.row input{accent-color:var(--accent)!important}
+button.go,.btn.primary,a.btn.primary{background:var(--accent)!important;color:#fff!important;border-radius:999px!important;font-weight:600!important}
+.btn{border-radius:999px!important}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<form class="card" id="f">
+  <h1>Welcome! Create the admin account</h1>
+  <p>This is done once. The admin can start/stop the camera, change settings and add other people.</p>
+  <label for="u">Admin username</label>
+  <input id="u" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="for example: sarthik" required>
+  <div class="hint">3-20 letters, numbers or _ (no spaces)</div>
+  <label for="p">Password</label>
+  <input id="p" type="password" autocomplete="new-password" required>
+  <div class="meter"><i id="m"></i></div><div class="hint" id="mh">At least 8 characters. Longer is stronger.</div>
+  <label for="p2">Type the password again</label>
+  <input id="p2" type="password" autocomplete="new-password" required>
+  <button id="go" type="submit">Create admin and open dashboard</button>
+  <div class="err" id="err"></div>
+</form>
+<script>
+const $=id=>document.getElementById(id);
+function score(s){let n=0;if(s.length>=8)n++;if(s.length>=12)n++;if(/[A-Z]/.test(s)&&/[a-z]/.test(s))n++;if(/\d/.test(s))n++;if(/[^A-Za-z0-9]/.test(s))n++;return n;}
+$('p').oninput=()=>{const n=score($('p').value);const c=['#ef4444','#ef4444','#f59e0b','#f59e0b','#4ade80','#22c55e'][n];
+  $('m').style.width=(n/5*100)+'%';$('m').style.background=c;$('mh').textContent=['Too short','Weak','Okay','Good','Strong','Very strong'][n];};
+$('f').onsubmit=async e=>{
+  e.preventDefault();$('err').textContent='';
+  if($('p').value!==$('p2').value){$('err').textContent='The two passwords are different.';return;}
+  $('go').disabled=true;
+  try{
+    const r=await fetch('/api/setup',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','X-Classync':'1'},
+      body:JSON.stringify({username:$('u').value.trim(),password:$('p').value})});
+    const d=await r.json().catch(()=>({}));
+    if(r.ok){location.replace('/');return;}
+    $('err').textContent=d.error||'Something went wrong.';
+  }catch(_){$('err').textContent='Cannot reach the server.';}
+  $('go').disabled=false;
+};
+$('u').focus();
+</script>
+</body>
+</html>

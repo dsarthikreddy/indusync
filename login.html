@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#070b10">
+<title>Sign in - SARTHIK Room</title>
+<link rel="icon" href="/favicon.ico">
+<style>
+:root{--bg:#070b10;--card:#0f1821;--line:#1f2d3b;--text:#e8eef4;--muted:#8a9aab;--accent:#22d3ee;--bad:#f87171}
+*{box-sizing:border-box}html,body{height:100%}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--text);
+background:radial-gradient(1200px 600px at 10% -10%,#0e2a36 0,transparent 60%),radial-gradient(900px 500px at 110% 110%,#132238 0,transparent 55%),var(--bg);
+display:flex;align-items:center;justify-content:center;padding:24px}
+.card{width:100%;max-width:400px;background:linear-gradient(180deg,#111c26,#0d151d);border:1px solid var(--line);border-radius:20px;padding:30px 26px;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+.logo{width:44px;height:44px;border-radius:12px;background:#0b1016;border:1px solid #1d3a47;display:grid;place-items:center}
+h1{font-size:19px;margin:0}.sub{color:var(--muted);font-size:13px;margin-top:2px}
+label{display:block;font-size:13px;color:var(--muted);margin:14px 0 6px}
+.field{position:relative}
+input[type=text],input[type=password]{width:100%;padding:13px 14px;border-radius:12px;border:1px solid var(--line);background:#0a1118;color:var(--text);font-size:16px;outline:none}
+input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(34,211,238,.15)}
+.eye{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:0;color:var(--muted);cursor:pointer;font-size:13px;padding:6px}
+.row{display:flex;align-items:center;gap:10px;margin:16px 0 4px;color:var(--muted);font-size:14px}
+.row input{width:18px;height:18px;accent-color:#22d3ee}
+button.go{width:100%;margin-top:18px;padding:14px;border:0;border-radius:12px;background:linear-gradient(90deg,#22d3ee,#0ea5e9);color:#04202a;font-weight:700;font-size:16px;cursor:pointer}
+button.go:disabled{opacity:.6;cursor:default}
+.err{min-height:20px;color:var(--bad);font-size:14px;margin-top:12px}
+.foot{margin-top:18px;color:var(--muted);font-size:12px;text-align:center;line-height:1.5}
+/* SARTHIK Room design system v4 (sign-in / setup / request / welcome) */
+:root{--bg:#f5f5f7;--card:#fff;--line:#e3e3e8;--text:#1d1d1f;--muted:#6e6e73;--accent:#0071e3;--bad:#d70015;--ok:#1a9e4b;--field:#f2f2f5;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#000;--card:#161618;--line:#2c2c2e;--text:#f5f5f7;--muted:#98989d;--accent:#2997ff;--bad:#ff453a;--ok:#30d158;--field:#232326;color-scheme:dark}}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI Variable Text","Segoe UI",Inter,Roboto,sans-serif!important;
+  background:var(--bg)!important;color:var(--text)!important;-webkit-font-smoothing:antialiased}
+h1,h2{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI Variable Display","Segoe UI",Inter,sans-serif;letter-spacing:-.022em;font-weight:700}
+.card{background:var(--card)!important;border:1px solid var(--line)!important;border-radius:24px!important;box-shadow:0 1px 2px rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.08)!important;
+  animation:rise .4s cubic-bezier(.2,.8,.2,1)}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.logo{background:var(--text)!important;border:0!important}.logo svg circle{stroke:var(--bg)!important}.logo svg circle:last-child{fill:var(--bg)!important}
+input[type=text],input[type=password],input[type=email],textarea,select{background:var(--field)!important;border:1px solid transparent!important;color:var(--text)!important;border-radius:12px!important}
+input:focus,textarea:focus{border-color:var(--accent)!important;box-shadow:0 0 0 4px rgba(0,113,227,.15)!important}
+.row input{accent-color:var(--accent)!important}
+button.go,.btn.primary,a.btn.primary{background:var(--accent)!important;color:#fff!important;border-radius:999px!important;font-weight:600!important}
+.btn{border-radius:999px!important}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<form class="card" id="f" autocomplete="on">
+  <div class="brand">
+    <div class="logo"><svg width="26" height="26" viewBox="0 0 64 64"><circle cx="32" cy="32" r="14" fill="none" stroke="#22d3ee" stroke-width="6"/><circle cx="32" cy="32" r="5" fill="#22d3ee"/></svg></div>
+    <div><h1>SARTHIK Room</h1><div class="sub">Secure sign in</div></div>
+  </div>
+  <label for="u">Username</label>
+  <input type="text" id="u" autocomplete="username" autocapitalize="none" spellcheck="false" required>
+  <label for="p">Password</label>
+  <div class="field"><input type="password" id="p" autocomplete="current-password" required>
+    <button type="button" class="eye" id="eye">Show</button></div>
+  <div class="row"><input type="checkbox" id="r" checked><label for="r" style="margin:0">Keep me signed in on this device</label></div>
+  <button class="go" id="go" type="submit">Sign in</button>
+  <div class="err" id="err"></div>
+  <div class="foot">Private system. No account? <a href="/request" style="color:#22d3ee">Request access</a> &middot; <a href="/" style="color:#22d3ee">Home</a></div>
+</form>
+<script>
+const $=id=>document.getElementById(id);
+$('eye').onclick=()=>{const p=$('p');p.type=p.type==='password'?'text':'password';$('eye').textContent=p.type==='password'?'Show':'Hide';};
+$('f').onsubmit=async e=>{
+  e.preventDefault();$('err').textContent='';$('go').disabled=true;$('go').textContent='Signing in...';
+  try{
+    const r=await fetch('/api/login',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','X-Classync':'1'},
+      body:JSON.stringify({username:$('u').value.trim(),password:$('p').value,remember:$('r').checked})});
+    const d=await r.json().catch(()=>({}));
+    if(r.ok){location.replace('/');return;}
+    $('err').textContent=d.error||'Could not sign in.';
+  }catch(_){ $('err').textContent='Cannot reach the laptop. Is the CCTV window still open?'; }
+  $('go').disabled=false;$('go').textContent='Sign in';
+};
+$('u').focus();
+</script>
+</body>
+</html>

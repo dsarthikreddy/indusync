@@ -1,0 +1,1417 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#070b10">
+<title>SARTHIK Room</title>
+<link rel="icon" href="/favicon.ico">
+<style>
+:root{
+  --bg:#070b10;--card:#0e1720;--card2:#121d28;--line:#1d2a37;--text:#e8eef4;--muted:#8697a8;
+  --accent:#22d3ee;--accent2:#0ea5e9;--ok:#22c55e;--warn:#f59e0b;--bad:#ef4444;--r:18px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;-webkit-tap-highlight-color:transparent}
+body{background:radial-gradient(1400px 700px at 0% -20%,#0c2530 0,transparent 55%),var(--bg);min-height:100vh}
+button{font:inherit;color:inherit}
+.hidden{display:none!important}
+
+/* ---------- top bar ---------- */
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;padding:12px 18px;
+  padding-top:calc(12px + env(safe-area-inset-top));background:rgba(7,11,16,.82);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.logo{width:36px;height:36px;border-radius:10px;background:#0b1016;border:1px solid #1d3a47;display:grid;place-items:center;flex:none}
+.brand b{font-size:15px;letter-spacing:.3px;display:block}.brand small{color:var(--muted);font-size:12px}
+.pill{display:inline-flex;align-items:center;gap:7px;padding:6px 11px;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:.4px;
+  background:#16212c;color:var(--muted);border:1px solid var(--line);white-space:nowrap}
+.pill i{width:8px;height:8px;border-radius:50%;background:currentColor}
+.pill.live{color:#4ade80;border-color:#1f5134;background:#0d2117}.pill.live i{animation:blink 1.4s infinite}
+.pill.starting{color:var(--warn);border-color:#5a4210}.pill.error{color:#f87171;border-color:#5b2121}
+@keyframes blink{50%{opacity:.25}}
+.rec{color:#fff;background:var(--bad);padding:5px 9px;border-radius:8px;font-size:11px;font-weight:800;letter-spacing:.6px;animation:blink 1.6s infinite}
+.spacer{flex:1}
+.menu{position:relative}
+.menu>button{display:flex;align-items:center;gap:8px;background:#121d28;border:1px solid var(--line);padding:8px 12px;border-radius:12px;cursor:pointer}
+.avatar{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#22d3ee,#6366f1);display:grid;place-items:center;font-size:12px;font-weight:800;color:#04202a}
+.dropdown{position:absolute;right:0;top:calc(100% + 8px);min-width:220px;background:#0f1822;border:1px solid var(--line);border-radius:14px;padding:6px;box-shadow:0 20px 50px rgba(0,0,0,.5)}
+.dropdown button{display:block;width:100%;text-align:left;background:none;border:0;padding:11px 12px;border-radius:10px;cursor:pointer;font-size:14px}
+.dropdown button:hover{background:#16222e}
+.role{font-size:11px;color:var(--muted)}
+.badge{display:inline-block;min-width:20px;padding:2px 7px;border-radius:999px;background:var(--bad);color:#fff;font-size:11px;font-weight:800;margin-left:6px;text-align:center}
+.dotbadge{position:absolute;top:4px;right:4px;width:10px;height:10px;border-radius:50%;background:var(--bad)}
+
+/* ---------- layout ---------- */
+main{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:18px;padding:18px;max-width:1500px;margin:0 auto}
+@media (max-width:1000px){main{grid-template-columns:1fr;padding:12px;gap:12px}}
+.card{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.card h3{margin:0 0 12px;font-size:13px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px}
+.side{display:flex;flex-direction:column;gap:18px}
+@media (max-width:1000px){.side{gap:12px}}
+
+/* ---------- video ---------- */
+.video{padding:0;overflow:hidden}
+.stage{position:relative;aspect-ratio:16/9;background:#05080c;display:grid;place-items:center}
+.stage img{width:100%;height:100%;object-fit:contain;display:block}
+.stage.theater{position:fixed;inset:0;z-index:50;aspect-ratio:auto}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:20px;
+  background:radial-gradient(600px 300px at 50% 40%,#0f2430,transparent 70%),#05080c}
+.screen h2{margin:0;font-size:20px}.screen p{margin:0;color:var(--muted);font-size:14px;max-width:460px;line-height:1.5}
+.bigicon{width:70px;height:70px;border-radius:22px;background:#0c1a22;border:1px solid #1d3a47;display:grid;place-items:center}
+.spin{width:38px;height:38px;border:4px solid #1d3a47;border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.badge-live{position:absolute;left:12px;top:12px;display:flex;gap:8px}
+.chip{background:rgba(5,8,12,.72);border:1px solid rgba(255,255,255,.08);padding:5px 9px;border-radius:9px;font-size:12px;font-weight:700;backdrop-filter:blur(6px)}
+.chip.red{color:#fff;background:rgba(239,68,68,.9);border:0}
+.controls{display:flex;flex-wrap:wrap;gap:8px;padding:12px;border-top:1px solid var(--line);align-items:center}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:#131f2b;padding:10px 14px;border-radius:12px;cursor:pointer;font-size:14px;font-weight:600}
+.btn:hover{border-color:#2b3d4f}.btn:disabled{opacity:.45;cursor:default}
+.btn.primary{background:linear-gradient(90deg,#22d3ee,#0ea5e9);color:#04202a;border:0}
+.btn.danger{background:#2a1215;border-color:#5b2121;color:#fca5a5}
+.btn.on{border-color:#1f6a7a;color:var(--accent)}
+.btn.big{padding:14px 22px;font-size:16px;border-radius:14px}
+.meta{margin-left:auto;color:var(--muted);font-size:13px}
+@media (max-width:600px){.meta{width:100%;margin:4px 0 0}.controls .btn{flex:1 1 auto;justify-content:center}}
+
+/* ---------- stats ---------- */
+.people{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.big{font-size:64px;font-weight:800;line-height:1;letter-spacing:-2px;font-variant-numeric:tabular-nums}
+.big small{font-size:15px;font-weight:600;color:var(--muted);letter-spacing:0;margin-left:6px}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.kv div{background:#0b131b;border:1px solid var(--line);border-radius:12px;padding:10px}
+.kv b{display:block;font-size:18px;font-variant-numeric:tabular-nums}.kv span{font-size:12px;color:var(--muted)}
+.bar{height:8px;border-radius:8px;background:#16222e;overflow:hidden;margin-top:14px}.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#22d3ee,#0ea5e9);transition:width .4s}
+.bar.over i{background:linear-gradient(90deg,#f59e0b,#ef4444)}
+.ai{font-size:12px;color:var(--muted);margin-top:10px}
+.objs{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+.obj{display:flex;align-items:center;gap:10px;background:#0b131b;border:1px solid var(--line);border-radius:12px;padding:9px 11px}
+.obj .ic{font-size:18px;width:24px;text-align:center}.obj .nm{flex:1;font-size:14px;text-transform:capitalize;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.obj .ct{font-weight:800;font-variant-numeric:tabular-nums}
+.empty{color:var(--muted);font-size:14px;padding:6px 0}
+canvas{width:100%;height:150px;display:block}
+.list{display:flex;flex-direction:column;gap:8px;max-height:260px;overflow:auto}
+.item{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.45;background:#0b131b;border:1px solid var(--line);border-radius:12px;padding:9px 11px}
+.dot{width:8px;height:8px;border-radius:50%;margin-top:6px;flex:none;background:var(--muted)}
+.dot.ok{background:var(--ok)}.dot.warn{background:var(--warn)}.dot.alert{background:var(--bad)}.dot.info{background:var(--accent)}
+.item time{margin-left:auto;color:var(--muted);font-size:11px;white-space:nowrap;padding-left:8px}
+.door{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.door div{background:#0b131b;border:1px solid var(--line);border-radius:12px;padding:10px}
+.door b{font-size:26px;display:block;font-variant-numeric:tabular-nums}.door span{font-size:12px;color:var(--muted)}
+.radar{border-radius:12px;padding:11px 13px;margin-bottom:10px;border:1px solid var(--line);background:#0b131b}
+.radar b{display:block;font-size:15px}.radar span{font-size:12px;color:var(--muted)}
+.radar.here{border-color:#5a4210;background:#2a1d08}.radar.here b{color:#fcd34d}
+.radar.wait{border-color:#5b2121;background:#2a1215}.radar.wait b{color:#fca5a5}
+.radar.clear{border-color:#1f5134;background:#0d2117}.radar.clear b{color:#4ade80}
+.note{font-size:12px;color:var(--muted);line-height:1.5}
+.warnbox{background:#2a1d08;border:1px solid #5a4210;color:#fcd34d;border-radius:12px;padding:10px 12px;font-size:13px;margin-bottom:10px}
+
+/* ---------- modal ---------- */
+.modal{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.6);display:flex;align-items:flex-start;justify-content:center;padding:30px 14px;overflow:auto}
+.sheet{width:100%;max-width:640px;background:#0e1720;border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:0 30px 90px rgba(0,0,0,.6)}
+.sheet header{display:flex;align-items:center;margin-bottom:6px}.sheet h2{margin:0;font-size:18px}
+.x{margin-left:auto;background:none;border:0;font-size:24px;color:var(--muted);cursor:pointer;padding:4px 8px}
+fieldset{border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:14px 0 0}
+legend{padding:0 6px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.6px;text-transform:uppercase}
+.frow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #16212c}
+.frow:last-child{border-bottom:0}
+.frow label{font-size:14px}.frow .d{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+select,input[type=text],input[type=number],input[type=password]{background:#0a1118;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px 10px;font-size:15px;min-width:0}
+input[type=range]{accent-color:#22d3ee;width:150px}
+.sw{position:relative;width:46px;height:26px;flex:none}.sw input{opacity:0;width:0;height:0}
+.sw span{position:absolute;inset:0;background:#1d2a37;border-radius:26px;transition:.2s;cursor:pointer}
+.sw span:before{content:"";position:absolute;width:20px;height:20px;left:3px;top:3px;background:#c9d4de;border-radius:50%;transition:.2s}
+.sw input:checked+span{background:#0e7490}.sw input:checked+span:before{transform:translateX(20px);background:#fff}
+.actions{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
+.urow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #16212c}
+.urow .n{flex:1;font-weight:600}.tag{font-size:11px;padding:3px 8px;border-radius:8px;background:#16222e;color:var(--muted)}
+.tag.admin{color:var(--accent);background:#0c2730}
+.form2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media (max-width:600px){.form2{grid-template-columns:1fr}}
+.secret{font-family:ui-monospace,Consolas,monospace;background:#07141a;border:1px dashed #1f6a7a;border-radius:10px;padding:10px;margin-top:10px;word-break:break-all}
+.url{display:flex;gap:8px;align-items:center;margin:6px 0}.url code{flex:1;background:#0a1118;border:1px solid var(--line);border-radius:10px;padding:9px;font-size:13px;overflow:auto;white-space:nowrap}
+/* ---------- toast ---------- */
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:80;background:#101c27;border:1px solid #1f6a7a;
+  padding:12px 16px;border-radius:14px;font-size:14px;box-shadow:0 20px 50px rgba(0,0,0,.5);max-width:92vw}
+.toast a{color:var(--accent)}
+/* ---------- v3: one website for the whole CLASSYNC Stage 1 ---------- */
+.tabs{position:sticky;top:var(--toph,62px);z-index:15;display:flex;gap:6px;overflow-x:auto;padding:10px 18px;
+  background:rgba(7,11,16,.88);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{flex:none;border:1px solid var(--line);background:#101a24;color:var(--muted);padding:8px 13px;border-radius:999px;
+  font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
+.tabs button:hover{color:var(--text)}
+.tabs button.on{background:linear-gradient(90deg,#22d3ee,#0ea5e9);color:#04202a;border-color:transparent}
+.tabs button .cnt{margin-left:6px;background:#ef4444;color:#fff;border-radius:99px;padding:0 6px;font-size:11px}
+.page{padding:18px;max-width:1500px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+@media (max-width:1000px){.page{padding:12px;gap:12px}}
+.page h2.ph{margin:0;font-size:22px}.page .sub{color:var(--muted);font-size:13px;margin-top:4px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:12px}
+.kpi{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.kpi b{display:block;font-size:30px;line-height:1.1}.kpi span{color:var(--muted);font-size:12px}
+.kpi.ok b{color:var(--ok)}.kpi.bad b{color:#f87171}.kpi.warn b{color:var(--warn)}.kpi.acc b{color:var(--accent)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media (max-width:1000px){.grid2,.grid3{grid-template-columns:1fr;gap:12px}}
+.tw{overflow-x:auto}
+table.t{width:100%;border-collapse:collapse;font-size:13px}
+.t th{text-align:left;color:var(--muted);font-weight:600;padding:8px;border-bottom:1px solid var(--line);white-space:nowrap}
+.t td{padding:8px;border-bottom:1px solid #15212d;vertical-align:top}
+.t tr:hover td{background:#0c151e}
+.sev{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;white-space:nowrap}
+.sev.ok{background:#0d2117;color:#4ade80}.sev.info{background:#0f1f2c;color:#7dd3fc}.sev.warn{background:#2a1f08;color:#fbbf24}
+.sev.alert{background:#2a1215;color:#fca5a5}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:7px;vertical-align:middle}
+.dot.g{background:var(--ok)}.dot.r{background:var(--bad)}.dot.y{background:var(--warn)}.dot.x{background:#475569}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:7px 16px;font-size:14px}.kv span{color:var(--muted)}
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.filters input,.filters select,.inp{background:#0b141c;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:9px 10px;font:inherit;font-size:13px}
+.prog{height:10px;background:#16212c;border-radius:99px;overflow:hidden}.prog i{display:block;height:100%;background:linear-gradient(90deg,#22d3ee,#22c55e);transition:width .3s}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px}
+.gallery figure{margin:0}.gallery img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;border:1px solid var(--line);background:#0b141c}
+.gallery figcaption{font-size:11px;color:var(--muted);margin-top:4px}
+.mini{font-size:12px;color:var(--muted)}.right{text-align:right}.nowrap{white-space:nowrap}
+.btn.sm{padding:6px 10px;font-size:12px;border-radius:10px}
+.rowact{display:flex;gap:6px;flex-wrap:wrap}
+.who{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#0c151e}
+.who .av{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:800;background:#123040;color:var(--accent);flex:none}
+.who small{color:var(--muted);display:block}
+.banner{border:1px solid #1d3a47;background:#0b1a22;border-radius:14px;padding:12px 14px;font-size:13px;line-height:1.55}
+.banner.warn{border-color:#5a4210;background:#1d1606}.banner.bad{border-color:#5b2121;background:#1d0c0e}
+/* =====================  SARTHIK Room design system v4  =====================
+   Tokens for light + dark. Placed after the older styles, so it restyles every
+   existing element without changing any element or behaviour.                */
+:root,[data-theme="light"]{
+  --bg:#f5f5f7;--surface:#ffffff;--surface2:#fbfbfd;--field:#f2f2f5;--line:#e3e3e8;--line2:#d2d2d7;
+  --text:#1d1d1f;--muted:#6e6e73;--accent:#0071e3;--accent2:#0077ed;--accent-ink:#ffffff;--accentsoft:rgba(0,113,227,.10);
+  --ok:#1a9e4b;--oksoft:rgba(26,158,75,.10);--warn:#b25e00;--warnsoft:rgba(255,159,10,.14);--bad:#d70015;--badsoft:rgba(255,59,48,.10);
+  --glass:rgba(251,251,253,.78);--shadow:0 1px 2px rgba(0,0,0,.04),0 8px 28px rgba(0,0,0,.06);--shadow2:0 24px 70px rgba(0,0,0,.16);
+  --card:#ffffff;--card2:#ffffff;--r:20px;
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI Variable Text","Segoe UI",Inter,Roboto,"Helvetica Neue",Arial,sans-serif;
+  --font-display:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI Variable Display","Segoe UI",Inter,Roboto,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#000000;--surface:#161618;--surface2:#1c1c1e;--field:#232326;--line:#2c2c2e;--line2:#3a3a3c;
+  --text:#f5f5f7;--muted:#98989d;--accent:#2997ff;--accent2:#0a84ff;--accent-ink:#ffffff;--accentsoft:rgba(41,151,255,.16);
+  --ok:#30d158;--oksoft:rgba(48,209,88,.14);--warn:#ffd60a;--warnsoft:rgba(255,214,10,.13);--bad:#ff453a;--badsoft:rgba(255,69,58,.15);
+  --glass:rgba(22,22,24,.72);--shadow:0 1px 0 rgba(255,255,255,.04) inset,0 10px 30px rgba(0,0,0,.45);--shadow2:0 30px 90px rgba(0,0,0,.7);
+  --card:#161618;--card2:#161618;color-scheme:dark}}
+[data-theme="dark"]{
+  --bg:#000000;--surface:#161618;--surface2:#1c1c1e;--field:#232326;--line:#2c2c2e;--line2:#3a3a3c;
+  --text:#f5f5f7;--muted:#98989d;--accent:#2997ff;--accent2:#0a84ff;--accent-ink:#ffffff;--accentsoft:rgba(41,151,255,.16);
+  --ok:#30d158;--oksoft:rgba(48,209,88,.14);--warn:#ffd60a;--warnsoft:rgba(255,214,10,.13);--bad:#ff453a;--badsoft:rgba(255,69,58,.15);
+  --glass:rgba(22,22,24,.72);--shadow:0 1px 0 rgba(255,255,255,.04) inset,0 10px 30px rgba(0,0,0,.45);--shadow2:0 30px 90px rgba(0,0,0,.7);
+  --card:#161618;--card2:#161618;color-scheme:dark}
+html,body{background:var(--bg);color:var(--text);font-family:var(--font);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{background:var(--bg)}
+h1,h2,h3,.ph{font-family:var(--font-display);letter-spacing:-.022em}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:10px}
+::selection{background:var(--accentsoft)}
+/* header + tabs: translucent glass */
+.top{background:var(--glass);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--line)}
+.logo{background:var(--text);border:0;border-radius:11px}
+.logo svg circle{stroke:var(--bg)!important}.logo svg circle:last-child{fill:var(--bg)!important}
+.brand b{font-size:16px;font-weight:650;letter-spacing:-.01em}
+.pill{background:var(--field);border-color:transparent;color:var(--muted);font-weight:600;letter-spacing:0}
+.pill.live{color:var(--ok);background:var(--oksoft);border-color:transparent}
+.pill.starting{color:var(--warn);background:var(--warnsoft)}.pill.error{color:var(--bad);background:var(--badsoft)}
+.menu>button{background:var(--field);border-color:transparent;border-radius:999px}
+.avatar{background:var(--accent);color:#fff}
+.dropdown{background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow2);border-radius:16px}
+.dropdown button:hover{background:var(--field)}
+.tabs{background:var(--glass);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--line);gap:4px}
+.tabs button{background:transparent;border:0;color:var(--muted);font-weight:550;padding:8px 14px;transition:background .2s,color .2s}
+.tabs button:hover{color:var(--text);background:var(--field)}
+.tabs button.on{background:var(--text);color:var(--bg)}
+/* surfaces */
+.card,.kpi{background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:var(--r)}
+.card h3{color:var(--muted);font-weight:600;font-size:12px;letter-spacing:.04em}
+.kpi b{font-family:var(--font-display);font-weight:650;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.kpi.ok b{color:var(--ok)}.kpi.bad b{color:var(--bad)}.kpi.warn b{color:var(--warn)}.kpi.acc b{color:var(--accent)}
+.kpi{transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s}
+.kpi:hover{transform:translateY(-2px)}
+.kv div,.door div,.obj,.item,.radar,.who{background:var(--surface2);border:1px solid var(--line)}
+.radar.here{background:var(--warnsoft);border-color:transparent}.radar.here b{color:var(--warn)}
+.radar.wait{background:var(--badsoft);border-color:transparent}.radar.wait b{color:var(--bad)}
+.radar.clear{background:var(--oksoft);border-color:transparent}.radar.clear b{color:var(--ok)}
+.warnbox{background:var(--warnsoft);border-color:transparent;color:var(--warn)}
+.bar,.prog{background:var(--field)}.bar i,.prog i{background:var(--accent)}
+.big{font-family:var(--font-display);font-weight:650;letter-spacing:-.04em}
+/* buttons */
+.btn{background:var(--field);border:1px solid transparent;color:var(--text);border-radius:999px;font-weight:550;padding:9px 16px;
+  transition:background .2s,transform .12s,box-shadow .2s}
+.btn:hover{border-color:transparent;background:var(--line)}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}.btn.primary:hover{background:var(--accent2)}
+.btn.danger{background:var(--badsoft);color:var(--bad);border-color:transparent}
+.btn.on{color:var(--accent);background:var(--accentsoft)}
+/* video stays dark (it is a screen) */
+.stage,.screen{background:#000}.screen h2{color:#f5f5f7}.screen p{color:#a1a1a6}
+.bigicon{background:#1c1c1e;border-color:#2c2c2e}
+/* forms */
+select,input[type=text],input[type=number],input[type=password],input[type=date],input[type=email],textarea,.filters input,.filters select,.inp{
+  background:var(--field);color:var(--text);border:1px solid transparent;border-radius:12px;transition:border-color .2s,box-shadow .2s}
+select:focus,input:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--accentsoft);outline:none}
+input[type=range]{accent-color:var(--accent)}
+.sw span{background:var(--line2)}.sw span:before{background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.2)}.sw input:checked+span{background:var(--ok)}
+/* modal sheets */
+.modal{background:rgba(0,0,0,.35);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.sheet{background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow2);border-radius:24px}
+fieldset{border-color:var(--line)}legend{color:var(--accent)}
+.frow,.urow{border-bottom-color:var(--line)}
+.tag{background:var(--field);color:var(--muted)}.tag.admin{color:var(--accent);background:var(--accentsoft)}
+.secret,.url code{background:var(--field);border-color:var(--line)}
+.toast{background:var(--text);color:var(--bg);border:0;border-radius:999px;box-shadow:var(--shadow2)}
+/* tables, labels, banners */
+.t th{color:var(--muted);border-bottom-color:var(--line);font-weight:600}
+.t td{border-bottom-color:var(--line)}.t tr:hover td{background:var(--surface2)}
+.sev.ok{background:var(--oksoft);color:var(--ok)}.sev.info{background:var(--accentsoft);color:var(--accent)}
+.sev.warn{background:var(--warnsoft);color:var(--warn)}.sev.alert{background:var(--badsoft);color:var(--bad)}
+.dot.g{background:var(--ok)}.dot.r{background:var(--bad)}.dot.y{background:var(--warn)}
+.banner{background:var(--accentsoft);border-color:transparent;color:var(--text)}
+.banner.warn{background:var(--warnsoft)}.banner.bad{background:var(--badsoft)}
+.who .av{background:var(--accentsoft);color:var(--accent)}
+.gallery img{border-color:var(--line);background:var(--field)}
+.note,.mini,.empty,.sub{color:var(--muted)}
+/* motion */
+.page{animation:rise .35s cubic-bezier(.2,.8,.2,1)}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.skeleton{background:linear-gradient(90deg,var(--field),var(--line),var(--field));background-size:200% 100%;animation:shimmer 1.2s infinite;border-radius:10px;min-height:16px}
+@keyframes shimmer{to{background-position:-200% 0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* new v4 parts */
+.themebtn{width:36px;height:36px;border-radius:50%;border:0;background:var(--field);color:var(--text);cursor:pointer;display:grid;place-items:center;font-size:16px}
+.hero{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.hero h2.ph{font-size:34px;font-weight:700}
+.chart{width:100%;height:190px;display:block}
+.chart text{fill:var(--muted);font:11px var(--font)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted)}.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.ctl{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.ctl .card{display:flex;flex-direction:column;gap:10px}
+.ctl .card p{margin:0;color:var(--muted);font-size:13px;line-height:1.45}
+.chat{display:grid;grid-template-columns:240px 1fr;gap:18px;min-height:520px}
+@media (max-width:800px){.chat{grid-template-columns:1fr}}
+.chats{display:flex;flex-direction:column;gap:4px}
+.chats button{display:flex;justify-content:space-between;align-items:center;text-align:left;border:0;background:transparent;color:var(--text);padding:12px 14px;border-radius:14px;cursor:pointer;font-weight:550}
+.chats button.on{background:var(--accentsoft);color:var(--accent)}.chats button:hover{background:var(--field)}
+.chats .n{background:var(--accent);color:#fff;border-radius:99px;font-size:11px;padding:1px 7px}
+.thread{display:flex;flex-direction:column;height:560px}
+.msgs{flex:1;overflow:auto;display:flex;flex-direction:column;gap:6px;padding:6px 2px}
+.bub{max-width:76%;padding:9px 13px;border-radius:20px;background:var(--field);font-size:15px;line-height:1.38;word-wrap:break-word;white-space:pre-wrap}
+.bub.me{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:6px}
+.bub.them{align-self:flex-start;border-bottom-left-radius:6px}
+.bub small{display:block;font-size:11px;opacity:.7;margin-top:3px}
+.compose{display:flex;gap:8px;margin-top:10px}.compose textarea{flex:1;resize:none;height:44px;padding:11px 14px;font:inherit;font-size:15px;border-radius:22px}
+</style>
+<script>try{var t=localStorage.getItem("sr-theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">
+    <div class="logo"><svg width="22" height="22" viewBox="0 0 64 64"><circle cx="32" cy="32" r="14" fill="none" stroke="#22d3ee" stroke-width="6"/><circle cx="32" cy="32" r="5" fill="#22d3ee"/></svg></div>
+    <div><b>SARTHIK Room</b><small>Smart Room</small></div>
+  </div>
+  <span class="pill" id="pill"><i></i><span id="pillText">OFF</span></span>
+  <span class="rec hidden" id="recBadge">REC</span>
+  <div class="spacer"></div>
+  <div class="menu">
+    <button id="menuBtn" aria-haspopup="true" style="position:relative"><span class="dotbadge hidden" id="menuDot"></span><span class="avatar" id="avatar">?</span><span id="who">...</span> &#9662;</button>
+    <div class="dropdown hidden" id="dropdown">
+      <button id="mSettingsBtn" class="adminOnly">&#9881;&#65039; Settings</button>
+      <button id="mUsersBtn">&#128101; People &amp; sharing <span class="badge hidden" id="reqBadge">0</span></button>
+      <button id="logLink" class="adminOnly">&#128196; Download headcount log</button>
+      <button id="logoutBtn">&#8618; Sign out</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section>
+    <div class="card video">
+      <div class="stage" id="stage">
+        <img id="feed" alt="Live camera">
+        <div class="badge-live hidden" id="liveBadges"><span class="chip red">&#9679; LIVE</span><span class="chip" id="chipPeople">0 people</span></div>
+
+        <div class="screen" id="scrOff">
+          <div class="bigicon"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="1.8"><path d="M15 10l4.6-2.3A1 1 0 0 1 21 8.6v6.8a1 1 0 0 1-1.4.9L15 14"/><rect x="3" y="6" width="12" height="12" rx="2"/></svg></div>
+          <h2>Camera is off</h2>
+          <p id="offText">Nothing is being watched or recorded. Press Start when you want to see the room.</p>
+          <button class="btn primary big" id="bigStart">&#9654; Start monitoring</button>
+        </div>
+        <div class="screen hidden" id="scrWait"><div class="spin"></div><h2 id="waitTitle">Connecting to the camera...</h2><p id="waitText">This usually takes 2-5 seconds.</p></div>
+        <div class="screen hidden" id="scrErr">
+          <div class="bigicon" style="border-color:#5b2121"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.5"/></svg></div>
+          <h2>Camera problem</h2><p id="errText"></p>
+          <button class="btn primary big" id="retryBtn">&#8635; Try again</button>
+        </div>
+      </div>
+      <div class="controls">
+        <button class="btn primary" id="startBtn">&#9654; Start</button>
+        <button class="btn danger" id="stopBtn">&#9632; Stop</button>
+        <button class="btn" id="snapBtn">&#128247; Snapshot</button>
+        <button class="btn" id="boxBtn">&#9635; Boxes</button>
+        <button class="btn adminOnly" id="recBtn">&#9679; Record</button>
+        <button class="btn" id="fullBtn">&#x26F6; Full screen</button>
+        <button class="btn" id="qBtn" title="Video quality">&#127916; Auto</button>
+        <span class="meta" id="meta"></span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <h3>&#128230; Objects in the room</h3>
+      <div class="objs" id="objs"></div>
+      <div class="empty" id="objEmpty">Start the camera to see what is in the room.</div>
+    </div>
+  </section>
+
+  <aside class="side">
+    <div class="card">
+      <h3>&#128101; People in the room</h3>
+      <div class="people"><div class="big" id="people">&ndash;</div><div class="note" id="aiState" style="text-align:right"></div></div>
+      <div class="bar" id="capBar"><i></i></div>
+      <div class="kv">
+        <div><b id="peak">0</b><span>Peak today</span></div>
+        <div><b id="cap">&ndash;</b><span>Room limit</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>&#128200; Occupancy &middot; last 60 min</h3>
+      <canvas id="chart"></canvas>
+    </div>
+
+    <div class="card hidden" id="doorCard">
+      <h3>&#128682; Door board (ESP32)</h3>
+      <div class="radar hidden" id="radarBox"><b id="radarTitle"></b><span id="radarSub"></span></div>
+      <div class="door"><div><b id="doorIn">0</b><span>Checked in today</span></div><div><b id="doorSeen">0</b><span>Camera sees now</span></div></div>
+      <div class="door" id="radarCounts"><div><b id="radarPassed">0</b><span>Passed the door</span></div><div><b id="radarWaited">0</b><span>Waited 1 min</span></div></div>
+      <div class="note" id="doorState"></div>
+      <div class="list" id="doorEvents" style="margin-top:10px"></div>
+    </div>
+
+    <div class="card">
+      <h3>&#128276; Alerts &amp; activity</h3>
+      <div class="list" id="alerts"><div class="empty">No alerts yet.</div></div>
+    </div>
+  </aside>
+</main>
+<!-- ======================= v3 pages (the Live CCTV page is the original one above) ======================= -->
+<div class="page hidden" id="tab-dash">
+  <div class="hero"><div><h2 class="ph" id="dashHello">SARTHIK Room</h2><div class="sub" id="dashSub">Loading&hellip;</div></div>
+    <div class="rowact adminOnly"><button class="btn primary" data-door="opendoor">Open door</button><button class="btn" data-goto="ctrl">Control</button></div></div>
+  <div class="kpis" id="dashKpis"><div class="kpi skeleton" style="height:84px"></div><div class="kpi skeleton" style="height:84px"></div><div class="kpi skeleton" style="height:84px"></div></div>
+  <div class="grid2">
+    <div class="card"><h3>Last 7 days</h3><svg class="chart" id="dashChart" viewBox="0 0 600 190" preserveAspectRatio="none" role="img" aria-label="Entries and alerts in the last 7 days"></svg>
+      <div class="legend"><span><i style="background:var(--accent)"></i>Door entries</span><span><i style="background:var(--ok)"></i>Confirmed by CCTV</span><span><i style="background:var(--bad)"></i>Alerts</span></div></div>
+    <div class="card"><h3>Door board</h3><div class="kv" id="dashBoard"></div></div>
+  </div>
+  <div class="grid2">
+    <div class="card"><h3>In the room now</h3><div class="list" id="dashNow" style="max-height:340px"></div></div>
+    <div class="card"><h3>Latest events</h3><div class="tw"><table class="t"><tbody id="dashRecent"></tbody></table></div>
+      <div style="margin-top:10px"><button class="btn sm" data-goto="events">Full event history &rsaquo;</button></div></div>
+  </div>
+</div>
+
+<div class="page hidden" id="tab-ctrl">
+  <div><h2 class="ph">Control</h2><div class="sub">Run the door board, reach your phone and manage the system from here.</div></div>
+  <div id="cBanner"></div>
+  <div class="ctl adminOnly">
+    <div class="card"><h3>Door</h3><p>Opens the servo for 3 seconds, exactly like a valid entry.</p><button class="btn primary" data-door="opendoor">Open door now</button></div>
+    <div class="card"><h3>New day</h3><p>Clears today's attendance on the board. Faces and cards stay.</p><button class="btn" data-door="reset" data-confirm="Start a new day on the door board?">Start new day</button></div>
+    <div class="card"><h3>Add a card</h3><p>Choose the person, press Start, then tap the new card within 60 s. On the same tap the board saves the face.</p>
+      <select id="cCardWho" class="inp"></select><div class="rowact"><button class="btn primary" id="cLearn">Start</button><button class="btn" data-door="cancelcard">Cancel</button></div></div>
+    <div class="card"><h3>Phone key</h3><p>Add a phone (then pair it within 60 s with code 123456) or remove one.</p>
+      <input id="cPhone" class="inp" placeholder="phone name, e.g. mom" maxlength="20"><div class="rowact"><button class="btn primary" id="cPhoneAdd">Add phone</button><button class="btn danger" id="cPhoneDel">Remove</button></div></div>
+    <div class="card"><h3>Door alerts</h3><p>Security notifications sent by the door board to your phone.</p>
+      <div class="rowact"><button class="btn" data-door="alerts on">On</button><button class="btn" data-door="alerts off">Off</button><button class="btn" data-door="testalert">Test</button></div></div>
+    <div class="card"><h3>Re-enroll a door face</h3><p>Deletes one person's face on the board (it restarts). Their next card tap saves a new face.</p>
+      <select id="cForgetWho" class="inp"></select><button class="btn danger" id="cForget">Delete face on board</button></div>
+    <div class="card"><h3>Restart board</h3><p>Safe restart. Faces, cards, phones and events are kept.</p><button class="btn" data-door="restart" data-confirm="Restart the door board?">Restart</button></div>
+  </div>
+  <div class="grid2 adminOnly">
+    <div class="card"><h3>Message to my phone</h3><div class="compose"><textarea id="cNote" maxlength="500" placeholder="Type a message for your phone&hellip;"></textarea><button class="btn primary" id="cNoteGo">Send</button></div>
+      <div class="mini" style="margin-top:8px">Arrives in the ntfy app (channel set below). <button class="btn sm" id="cTestPhone">Send a test</button></div></div>
+    <div class="card"><h3>Integrations</h3><div class="kv">
+      <span>Phone channel (ntfy)</span><div><input id="iTopic" class="inp" maxlength="64"></div>
+      <span>CCTV alerts to phone</span><div><label class="sw"><input type="checkbox" id="iPhone"><span></span></label></div>
+      <span>Webhook (Stage 3)</span><div><input id="iHook" class="inp" placeholder="https://&hellip; (n8n, Sheets, Telegram, WhatsApp, e-mail)" style="width:100%"></div>
+      <span>Send</span><div><select id="iHookEv" class="inp"><option value="alerts">Alerts and warnings</option><option value="all">Every event</option></select></div>
+      <span>Door key</span><div><input id="iKey" class="inp" type="password" placeholder="unchanged" maxlength="64" autocomplete="off"></div></div>
+      <div class="rowact" style="margin-top:12px"><button class="btn primary" id="iSave">Save</button><span class="mini" id="iOut"></span></div></div>
+  </div>
+  <div class="card adminOnly"><h3>Backups</h3><div class="filters"><button class="btn primary sm" id="bkGo">Back up now</button><span class="mini">A copy is also made automatically every day (14 kept). Copy the backups folder to a USB drive regularly.</span></div>
+    <div class="tw"><table class="t"><tbody id="bkList"></tbody></table></div></div>
+</div>
+
+<div class="page hidden" id="tab-chat">
+  <div><h2 class="ph">Messages</h2><div class="sub">Talk to everyone in the house, or one person. Works from any phone signed in to SARTHIK Room.</div></div>
+  <div class="chat"><div class="card"><div class="chats" id="chatList"></div></div>
+    <div class="card thread"><h3 id="chatTitle">Family</h3><div class="msgs" id="chatMsgs" aria-live="polite"></div>
+      <div class="compose"><textarea id="chatText" maxlength="1000" placeholder="Message" aria-label="Message"></textarea><button class="btn primary" id="chatSend">Send</button></div></div></div>
+</div>
+
+<div class="page hidden" id="tab-att">
+  <div><h2 class="ph">Attendance</h2><div class="sub">Who entered through the door (card + face or phone key), checked against the CCTV camera.</div></div>
+  <div class="card"><div class="filters"><select id="attDays"></select><input type="date" id="attDate">
+    <button class="btn sm" id="attCsv">Download CSV</button><span class="mini" id="attSum"></span></div></div>
+  <div class="card tw"><table class="t"><thead><tr><th>Person</th><th>Status</th><th>First entry</th><th>Last seen</th><th>How</th><th>Entries</th><th>CCTV confirmed</th><th>Mismatches</th></tr></thead><tbody id="attBody"></tbody></table></div>
+  <div class="card"><h3>Visitors (one-time QR passes)</h3><div id="attVisitors"></div></div>
+</div>
+
+<div class="page hidden" id="tab-people">
+  <div><h2 class="ph">People</h2><div class="sub">One shared list for the door board and the CCTV. Door-board people appear here automatically with the SAME id.</div></div>
+  <div class="card adminOnly"><h3>Add a person (laptop CCTV only)</h3>
+    <div class="filters"><input id="pName" placeholder="Name, e.g. Rozy" maxlength="40"><button class="btn primary sm" id="pAdd">Add person</button>
+    <span class="mini">For people on the door board you do not need this: they are added automatically.</span></div></div>
+  <div class="card tw"><table class="t"><thead><tr><th>Person (id)</th><th>Where registered</th><th>Card</th><th>Face on door</th><th>Laptop face samples</th>
+    <th>First seen</th><th>Last seen</th><th>Appearances</th><th>Door entries</th><th>CCTV sightings</th><th>Confirmed</th><th>Mismatches</th><th>Seen by</th><th class="adminOnly">Actions</th></tr></thead>
+    <tbody id="pBody"></tbody></table><div class="mini" id="pFoot" style="margin-top:8px"></div></div>
+  <input type="file" id="pFile" accept="image/*" class="hidden">
+</div>
+
+<div class="page hidden" id="tab-faces">
+  <div><h2 class="ph">Face recognition (laptop CCTV)</h2><div class="sub">The second, independent check. The door board still decides who may enter.</div></div>
+  <div id="fBanner"></div>
+  <div class="grid2">
+    <div class="card"><h3>Faces on camera now</h3><div class="list" id="fNow" style="max-height:340px"></div></div>
+    <div class="card"><h3>Registration</h3><div id="fJob"><div class="empty">No registration running. Start one from the People page (Register face).</div></div></div>
+  </div>
+  <div class="card"><h3>Unknown faces (photos saved as evidence)</h3><div class="gallery" id="fUnknown"></div></div>
+  <div class="card"><h3>How it decides</h3><div class="note">A face counts as a person when its similarity to that person's registered samples is at least the threshold
+    (Settings, default 40%) and clearly better than any other person. A person must be recognised in 2 pictures within 3 s;
+    an unknown face in 3 pictures within 5 s. Leaving = not seen for 20 s; coming back later = "re-entered".</div></div>
+</div>
+
+<div class="page hidden" id="tab-sec">
+  <div><h2 class="ph">Security events</h2><div class="sub">Everything that needs attention, from the door board and the CCTV cross-check.</div></div>
+  <div class="kpis" id="secKpis"></div>
+  <div class="card"><div class="filters"><select id="secDay"><option value="">All days</option></select>
+    <button class="btn sm" id="secCsv">Download CSV</button></div></div>
+  <div class="card tw"><table class="t"><thead><tr><th>Time</th><th>Level</th><th>What happened</th><th>Person</th><th>Details</th><th>From</th></tr></thead><tbody id="secBody"></tbody></table></div>
+</div>
+
+<div class="page hidden" id="tab-rfid">
+  <div><h2 class="ph">RFID status</h2><div class="sub">RC522 reader on the door board and every card event.</div></div>
+  <div class="kpis" id="rfidKpis"></div>
+  <div class="grid2">
+    <div class="card"><h3>Registered cards</h3><div class="tw"><table class="t"><thead><tr><th>Person</th><th>Card (masked)</th><th>Face saved</th><th>Locked</th><th>Entries</th><th>Wrong faces</th><th>Locks</th></tr></thead><tbody id="rfidCards"></tbody></table></div></div>
+    <div class="card"><h3>Card events</h3><div class="tw"><table class="t"><tbody id="rfidEvents"></tbody></table></div></div>
+  </div>
+</div>
+
+<div class="page hidden" id="tab-board">
+  <div><h2 class="ph">ESP32 door board</h2><div class="sub">Live status of the CLASSYNC door board (v8).</div></div>
+  <div id="bBanner"></div>
+  <div class="kpis" id="bKpis"></div>
+  <div class="grid2"><div class="card"><h3>Connection</h3><div class="kv" id="bConn"></div></div>
+    <div class="card"><h3>Door system</h3><div class="kv" id="bSys"></div></div></div>
+</div>
+
+<div class="page hidden" id="tab-ble">
+  <div><h2 class="ph">Bluetooth phone key</h2><div class="sub">Hands-free entry with a paired phone (BLE).</div></div>
+  <div class="kpis" id="bleKpis"></div>
+  <div class="card tw"><h3>Phone key events</h3><table class="t"><tbody id="bleEvents"></tbody></table></div>
+</div>
+
+<div class="page hidden" id="tab-wifi">
+  <div><h2 class="ph">Wi-Fi / CSI door radar (R2)</h2><div class="sub">Visits recorded by the standalone Wi-Fi radar R2, read from the door board's storage.</div></div>
+  <div class="banner">The Wi-Fi radar (R2) and the Bluetooth phone key cannot sense at the same time on ONE board (tested earlier).
+    The door board v8 keeps every R2 visit that is stored on it and this page shows them. To collect new radar visits, run R2 on the board
+    for a while (or on a second board later); they appear here automatically the next time v8 runs.</div>
+  <div class="kpis" id="wKpis"></div>
+  <div class="card tw"><table class="t"><thead><tr><th>Visit</th><th>Time</th><th>What happened</th><th>Seconds at door</th></tr></thead><tbody id="wBody"></tbody></table></div>
+</div>
+
+<div class="page hidden" id="tab-events">
+  <div><h2 class="ph">Event history</h2><div class="sub">Every important event, kept permanently on this laptop (and the door events also on the board).</div></div>
+  <div class="card"><div class="filters">
+    <select id="evDay"><option value="">All days</option></select>
+    <select id="evPerson"><option value="">Everyone</option></select>
+    <select id="evSev"><option value="">All levels</option><option value="alert">Alerts</option><option value="warn">Warnings</option><option value="ok">OK</option><option value="info">Info</option></select>
+    <select id="evSrc"><option value="">All sources</option><option value="door">Door board</option><option value="cctv">CCTV</option><option value="crosscheck">Cross-check</option><option value="system">System</option><option value="website">Website</option></select>
+    <input id="evQ" placeholder="Search..." style="min-width:160px">
+    <button class="btn sm" id="evGo">Show</button><button class="btn sm" id="evCsv">CSV</button></div></div>
+  <div class="card tw"><table class="t"><thead><tr><th>#</th><th>Time</th><th>Level</th><th>What happened</th><th>Person</th><th>Details</th><th>Source</th><th>Device</th></tr></thead><tbody id="evBody"></tbody></table>
+    <div style="margin-top:10px"><button class="btn sm" id="evMore">Load older events</button></div></div>
+</div>
+
+<div class="page hidden" id="tab-health">
+  <div><h2 class="ph">Device health</h2><div class="sub">Laptop (CCTV + website) and door board.</div></div>
+  <div class="grid2"><div class="card"><h3>Laptop</h3><div class="kv" id="hLaptop"></div></div>
+    <div class="card"><h3>Door board</h3><div class="kv" id="hBoard"></div></div></div>
+</div>
+
+<div class="page hidden" id="tab-storage">
+  <div><h2 class="ph">Storage</h2><div class="sub">Where everything is kept permanently.</div></div>
+  <div class="grid2"><div class="card"><h3>Laptop</h3><div class="kv" id="sLaptop"></div></div>
+    <div class="card"><h3>Door board</h3><div class="kv" id="sBoard"></div></div></div>
+</div>
+
+<div class="page hidden" id="tab-logs">
+  <div><h2 class="ph">System logs</h2><div class="sub">What the website and its links did (newest first).</div></div>
+  <div class="grid2"><div class="card tw"><h3>System</h3><table class="t"><tbody id="lSys"></tbody></table></div>
+    <div class="card tw"><h3>Alerts</h3><table class="t"><tbody id="lAlerts"></tbody></table></div></div>
+</div>
+
+<!-- ============ Settings ============ -->
+<div class="modal hidden" id="mSettings">
+  <div class="sheet">
+    <header><h2>&#9881;&#65039; Settings</h2><button class="x" data-close>&times;</button></header>
+    <div class="note">Saved permanently on the laptop. Camera changes restart the video automatically.</div>
+    <fieldset><legend>Camera</legend>
+      <div class="frow"><label>Camera number<span class="d">0 = built-in, 1 = USB webcam (usually)</span></label>
+        <div style="display:flex;gap:8px"><select id="s_camera_index"></select><button class="btn" id="findCams" type="button">Find</button></div></div>
+      <div class="note" id="camList"></div>
+      <div class="frow"><label>Resolution</label><select id="s_resolution"><option value="640x480">640 x 480 (fast)</option><option value="1280x720">1280 x 720 HD (recommended)</option><option value="1920x1080">1920 x 1080 Full HD</option></select></div>
+      <div class="frow"><label>Frame rate<span class="d">Pictures per second shown</span></label><select id="s_fps"><option>5</option><option>10</option><option>15</option><option>20</option><option>25</option><option>30</option></select></div>
+      <div class="frow"><label>Picture quality<span class="d" id="qv"></span></label><input type="range" id="s_jpeg_quality" min="40" max="95" step="5"></div>
+    </fieldset>
+    <fieldset><legend>AI counting</legend>
+      <div class="frow"><label>Count people &amp; objects</label><label class="sw"><input type="checkbox" id="s_detection_enabled"><span></span></label></div>
+      <div class="frow"><label>AI model<span class="d">Bigger = more accurate, slower</span></label><select id="s_model"><option value="auto">Auto - smooth on this laptop (recommended)</option><option value="yolo11n.pt">Fast (nano)</option><option value="yolo11s.pt">Balanced (small)</option><option value="yolo11m.pt">Most accurate (medium)</option></select></div>
+      <div class="frow"><label>Minimum confidence<span class="d" id="cv"></span></label><input type="range" id="s_confidence" min="0.25" max="0.8" step="0.05"></div>
+      <div class="frow"><label>Check every</label><select id="s_detect_every_ms"><option value="300">0.3 s</option><option value="500">0.5 s</option><option value="700">0.7 s (recommended)</option><option value="1000">1 s</option><option value="2000">2 s (low power)</option></select></div>
+      <div class="frow"><label>Show boxes on video</label><label class="sw"><input type="checkbox" id="s_show_boxes"><span></span></label></div>
+      <div class="frow"><label>Room limit (people)<span class="d">Alert when more people are inside</span></label><input type="number" id="s_max_occupancy" min="1" max="500" style="width:90px"></div>
+    </fieldset>
+    <fieldset><legend>Access &amp; privacy</legend>
+      <div class="frow"><label>Allow phones on the same Wi-Fi</label><label class="sw"><input type="checkbox" id="s_allow_lan"><span></span></label></div>
+      <div class="frow"><label>Allow Tailscale (secure access from anywhere)</label><label class="sw"><input type="checkbox" id="s_allow_tailscale"><span></span></label></div>
+      <div class="frow"><label>Viewers may start/stop the camera</label><label class="sw"><input type="checkbox" id="s_viewers_can_start"><span></span></label></div>
+      <div class="frow"><label>Auto-stop when nobody watches<span class="d">0 = keep running until you press Stop</span></label>
+        <select id="s_auto_stop_minutes"><option value="0">Never</option><option value="5">5 min</option><option value="10">10 min</option><option value="30">30 min</option><option value="60">1 hour</option><option value="120">2 hours</option></select></div>
+      <div class="frow"><label>Save headcount log<span class="d">Numbers only, never pictures</span></label><label class="sw"><input type="checkbox" id="s_log_counts"><span></span></label></div>
+    </fieldset>
+    <fieldset><legend>Public website link</legend>
+      <div class="frow"><label>Public link ON<span class="d">Anyone can open the front page; only approved people see inside</span></label><label class="sw"><input type="checkbox" id="s_public_access"><span></span></label></div>
+      <div class="frow"><label>Accept access requests<span class="d">Visitors can ask; you approve or deny</span></label><label class="sw"><input type="checkbox" id="s_allow_requests"><span></span></label></div>
+      <div class="frow"><label>Google verification code<span class="d">Optional, for Google Search Console</span></label><input type="text" id="s_google_verification" style="width:170px" placeholder="(empty)"></div>
+    </fieldset>
+    <fieldset><legend>Door board link (optional)</legend>
+      <div class="frow"><label>Read the door board<span class="d">Check-ins, plus the Wi-Fi door radar</span></label><label class="sw"><input type="checkbox" id="s_esp32_link"><span></span></label></div>
+      <div class="frow"><label>How to connect</label><select id="s_esp32_mode"><option value="wifi">Over Wi-Fi (recommended)</option><option value="usb">USB cable</option></select></div>
+      <div class="frow"><label>Door board address<span class="d">Shown in its Serial Monitor, e.g. 192.168.0.12</span></label><input type="text" id="s_esp32_host" style="width:150px" placeholder="192.168.0.12"></div>
+      <div class="frow"><label>USB port<span class="d">Only for USB mode. Close the Arduino Serial Monitor first</span></label><input type="text" id="s_esp32_port" style="width:110px" placeholder="COM4"></div>
+    </fieldset>
+    <div class="actions"><button class="btn" data-close>Cancel</button><button class="btn primary" id="saveSettings">Save settings</button></div>
+  </div>
+</div>
+
+<!-- ============ People & sharing ============ -->
+<div class="modal hidden" id="mUsers">
+  <div class="sheet">
+    <header><h2>&#128101; People &amp; sharing</h2><button class="x" data-close>&times;</button></header>
+    <div class="adminOnly">
+      <fieldset><legend>Public website link</legend><div id="pubBox" class="note">Loading...</div></fieldset>
+      <fieldset><legend>Access requests</legend><div id="reqList"><div class="note">No requests waiting.</div></div></fieldset>
+      <fieldset><legend>Who can open this dashboard</legend><div id="userList"></div></fieldset>
+      <fieldset><legend>Add a person</legend>
+        <div class="form2">
+          <input type="text" id="nuName" placeholder="Username (e.g. teacher1)" autocapitalize="none">
+          <select id="nuRole"><option value="viewer">Viewer (watch only)</option><option value="admin">Admin (full control)</option></select>
+          <input type="text" id="nuPass" placeholder="Password (empty = make a strong one)">
+          <button class="btn primary" id="nuAdd">Add person</button>
+        </div>
+        <div id="nuResult"></div>
+      </fieldset>
+      <fieldset><legend>Addresses to open the dashboard</legend><div id="urls"></div>
+        <div class="note" style="margin-top:8px">Share an address + that person's username and password privately (never in a public group).
+        For people outside your Wi-Fi, use the Tailscale address: only people you invite in Tailscale can reach it.</div>
+      </fieldset>
+    </div>
+    <fieldset><legend>Change my password</legend>
+      <div class="form2">
+        <input type="password" id="pwOld" placeholder="Current password">
+        <input type="password" id="pwNew" placeholder="New password (8+ characters)">
+      </div>
+      <div class="actions"><button class="btn primary" id="pwSave">Change password</button></div>
+    </fieldset>
+  </div>
+</div>
+
+<div class="toast hidden" id="toast"></div>
+
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const BLANK = "data:image/gif;base64,R0lGODlhAQABAAAAACw=";
+let S = null, streaming = false, feedReady = false, toastTimer = null, busy = false, lastPending = -1, streamQ = "high";
+let qMode = "auto";
+try { qMode = localStorage.getItem("classync_quality") || "auto"; } catch (_) {}
+function effQuality(s) {
+  if (qMode !== "auto") return qMode;
+  return (s && s.via_public) || window.innerWidth < 800 ? "low" : "high";
+}
+
+async function api(path, opts = {}) {
+  const o = Object.assign({credentials: "same-origin"}, opts);
+  o.headers = Object.assign({"X-Classync": "1"}, opts.body ? {"Content-Type": "application/json"} : {}, opts.headers || {});
+  const r = await fetch(path, o);
+  if (r.status === 401) { location.replace("/login"); throw new Error("signed out"); }
+  let d = {};
+  try { d = await r.json(); } catch (_) {}
+  if (!r.ok) throw new Error(d.error || ("Error " + r.status));
+  return d;
+}
+const post = (path, data) => api(path, {method: "POST", body: JSON.stringify(data || {})});
+
+function toast(html, ms = 3500) {
+  const t = $("toast"); t.innerHTML = html; t.classList.remove("hidden");
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.add("hidden"), ms);
+}
+function esc(s) { return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function ago(t) {
+  const s = Math.max(0, Math.round(Date.now() / 1000 - t));
+  if (s < 60) return s + "s ago"; if (s < 3600) return Math.floor(s / 60) + "m ago";
+  return new Date(t * 1000).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"});
+}
+function dur(s) { s = Math.max(0, Math.floor(s)); const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60);
+  return h ? h + "h " + m + "m" : m ? m + "m " + (s % 60) + "s" : s + "s"; }
+
+const ICONS = {person:"&#128100;",chair:"&#129681;",laptop:"&#128187;","cell phone":"&#128241;",bottle:"&#129524;",backpack:"&#127890;",
+  book:"&#128214;",cup:"&#9749;",tv:"&#128250;",keyboard:"&#9000;&#65039;",mouse:"&#128433;&#65039;",clock:"&#128339;","dining table":"&#129683;",
+  couch:"&#128715;&#65039;",bed:"&#128719;&#65039;","potted plant":"&#129716;",handbag:"&#128092;",umbrella:"&#9730;&#65039;",scissors:"&#9986;&#65039;",
+  "teddy bear":"&#129528;",vase:"&#127994;",remote:"&#128377;&#65039;",bench:"&#129681;",refrigerator:"&#129482;",microwave:"&#128293;",sink:"&#128688;",
+  suitcase:"&#129523;",tie:"&#128084;",bicycle:"&#128690;",car:"&#128663;",dog:"&#128021;",cat:"&#128008;",book2:"&#128218;"};
+
+// ---------------- rendering ----------------
+function render(s) {
+  S = s;
+  const cam = s.camera, ai = s.ai, admin = s.user.role === "admin";
+  document.querySelectorAll(".adminOnly").forEach(e => e.classList.toggle("hidden", !admin));
+  $("who").textContent = s.user.name; $("avatar").textContent = s.user.name.slice(0, 1).toUpperCase();
+
+  const st = cam.state;
+  const pill = $("pill"); pill.className = "pill " + (st === "live" ? "live" : st === "starting" ? "starting" : st === "error" ? "error" : "");
+  $("pillText").textContent = st === "live" ? "LIVE" : st === "starting" ? "STARTING" : st === "error" ? "PROBLEM" : "OFF";
+  $("recBadge").classList.toggle("hidden", !cam.recording);
+
+  // requests badge
+  const pend = admin ? (s.requests_pending || 0) : 0;
+  $("reqBadge").textContent = pend; $("reqBadge").classList.toggle("hidden", !pend); $("menuDot").classList.toggle("hidden", !pend);
+  if (pend > lastPending && lastPending >= 0) toast(`&#128276; ${pend} access request${pend > 1 ? "s" : ""} waiting. Open People &amp; sharing.`, 6000);
+  lastPending = pend;
+  if (!$("mUsers").classList.contains("hidden") && admin) renderPublic(s);
+
+  // screens
+  const live = st === "live";
+  if (streaming && $("feed").naturalWidth > 1) feedReady = true;   // works even if a browser skips the load event
+  $("scrOff").classList.toggle("hidden", st !== "off");
+  $("scrErr").classList.toggle("hidden", st !== "error");
+  $("scrWait").classList.toggle("hidden", !(st === "starting" || (live && !feedReady)));
+  $("errText").textContent = cam.error || "";
+  if (st === "starting") { $("waitTitle").textContent = "Connecting to the camera..."; $("waitText").textContent = (cam.detail || "Opening the webcam...") + "  (" + Math.round(cam.starting_for) + " s)"; }
+  else if (live && !feedReady) { $("waitTitle").textContent = "Loading video..."; $("waitText").textContent = "Almost ready."; }
+  $("liveBadges").classList.toggle("hidden", !(live && feedReady));
+  $("bigStart").classList.toggle("hidden", !s.can_control);
+  $("retryBtn").classList.toggle("hidden", !s.can_control);
+  $("offText").textContent = s.can_control
+    ? "Nothing is being watched or recorded. Press Start when you want to see the room."
+    : "The camera is off. Ask the admin to start it.";
+
+  // buttons
+  $("startBtn").classList.toggle("hidden", !s.can_control || live || st === "starting");
+  $("stopBtn").classList.toggle("hidden", !s.can_control || !(live || st === "starting"));
+  $("snapBtn").disabled = !live; $("fullBtn").disabled = !live;
+  $("boxBtn").classList.toggle("on", s.view.show_boxes); $("boxBtn").classList.toggle("hidden", !admin);
+  $("recBtn").classList.toggle("on", cam.recording); $("recBtn").disabled = !live;
+  $("recBtn").innerHTML = cam.recording ? "&#9632; Stop recording" : "&#9679; Record";
+  $("meta").textContent = live
+    ? `camera ${cam.index} · ${cam.width}x${cam.height} · ${cam.fps} fps · ${cam.viewers} watching · live ${dur(s.time - cam.since)}`
+    : (st === "off" ? "Camera off · not recording" : "");
+
+  // stream
+  const want = live && document.visibilityState === "visible";
+  const q = effQuality(s);
+  $("qBtn").innerHTML = "&#127916; " + ({auto: "Auto", high: "HD", low: "Data saver"}[qMode]) + (qMode === "auto" ? (q === "low" ? " (saver)" : " (HD)") : "");
+  if (streaming && q !== streamQ) { streaming = false; }
+  if (want && !streaming) { streaming = true; feedReady = false; streamQ = q; $("feed").src = "/api/stream?q=" + q + "&t=" + Date.now(); }
+  if (!want && streaming) { streaming = false; feedReady = false; $("feed").src = BLANK; }
+
+  // people
+  const counting = live && ai.enabled && ai.state === "running";
+  $("people").innerHTML = counting ? ai.people : "&ndash;";
+  $("chipPeople").textContent = counting ? ai.people + (ai.people === 1 ? " person" : " people") : "counting off";
+  $("peak").textContent = ai.peak_today; $("cap").textContent = ai.max_occupancy;
+  const frac = counting ? Math.min(1, ai.people / ai.max_occupancy) : 0;
+  $("capBar").querySelector("i").style.width = (frac * 100) + "%";
+  $("capBar").classList.toggle("over", counting && ai.people > ai.max_occupancy);
+  let aiTxt = "";
+  if (!ai.enabled) aiTxt = "Counting is switched off in Settings";
+  else if (!live) aiTxt = "Starts with the camera";
+  else if (ai.state === "loading") aiTxt = "Loading AI model... (first time downloads it)";
+  else if (ai.state === "error") aiTxt = ai.error;
+  else if (ai.state === "running") aiTxt = `AI: ${ai.model.replace(".pt", "")} · ${ai.ms} ms`;
+  $("aiState").textContent = aiTxt;
+
+  // objects
+  const objs = counting ? ai.objects : [];
+  $("objs").innerHTML = objs.map(o => `<div class="obj"><span class="ic">${ICONS[o.name] || "&#9635;"}</span><span class="nm">${esc(o.name)}</span><span class="ct">${o.count}</span></div>`).join("");
+  $("objEmpty").classList.toggle("hidden", objs.length > 0);
+  $("objEmpty").textContent = counting ? "No objects recognised right now." : "Start the camera to see what is in the room.";
+
+  drawChart(ai.history, s.time);
+
+  // door link
+  const door = s.door;
+  $("doorCard").classList.toggle("hidden", !door.enabled);
+  if (door.enabled) {
+    $("doorIn").textContent = door.checked_in;
+    $("doorSeen").innerHTML = counting ? ai.people : "&ndash;";
+    $("doorState").innerHTML = door.connected
+      ? `&#128994; Connected over ${door.mode === "wifi" ? "Wi-Fi" : "USB"} to ${esc(door.port)}` + (door.names.length ? ` · In today: ${door.names.map(esc).join(", ")}` : "")
+      : `&#128308; ${esc(door.error || "Connecting to " + door.port + "...")}`;
+    const rad = door.radar || {}, dc = door.counts || {};
+    const hasRadar = !!rad.state && rad.state !== "off";
+    $("radarBox").classList.toggle("hidden", !hasRadar);
+    $("radarCounts").classList.toggle("hidden", !hasRadar);
+    if (hasRadar) {
+      const waiting = rad.waiting, here = rad.state === "person_at_door";
+      $("radarBox").className = "radar " + (waiting ? "wait" : here ? "here" : "clear");
+      $("radarTitle").innerHTML = waiting ? "&#128680; Someone has waited 1 minute"
+        : here ? "&#128100; Someone is at the door" : "&#9989; Doorway is clear";
+      $("radarSub").textContent = here ? `for ${dur(rad.at_door_seconds)} · Wi-Fi radar score ${rad.score}`
+        : rad.state === "calibrating" ? "Radar is measuring the empty doorway..."
+        : `Wi-Fi radar watching · score ${rad.score} (triggers at ${rad.trigger})`;
+      $("radarPassed").textContent = dc.passed || 0;
+      $("radarWaited").textContent = dc.waited || 0;
+    }
+    const logRows = (door.door_log || []).map(e => `<div class="item"><span class="dot ${e.kind === "WAITED 1 MIN" ? "alert" : e.kind === "stopped at door" ? "warn" : "info"}"></span><span>${esc(e.kind)}${e.seconds ? " · " + dur(e.seconds) : ""}</span><time>${e.when > 1600000000 ? new Date(e.when * 1000).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"}) : "earlier"}</time></div>`).join("");
+    $("doorEvents").innerHTML = logRows + door.events.map(e => `<div class="item"><span class="dot ${e.level}"></span><span>${esc(e.msg)}</span><time>${ago(e.t)}</time></div>`).join("");
+  }
+
+  // alerts
+  $("alerts").innerHTML = s.alerts.length
+    ? s.alerts.map(a => `<div class="item"><span class="dot ${a.level}"></span><span>${esc(a.msg)}</span><time>${ago(a.t)}</time></div>`).join("")
+    : '<div class="empty">No alerts yet.</div>';
+}
+
+function drawChart(hist, now) {
+  const c = $("chart"), dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
+  if (!w) return;
+  c.width = w * dpr; c.height = h * dpr;
+  const g = c.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
+  const t0 = now - 3600, pts = hist.filter(p => p[0] >= t0);
+  const maxV = Math.max(4, ...pts.map(p => p[1])) + 1;
+  const L = 26, B = 18, T = 8, R = 6, pw = w - L - R, ph = h - T - B;
+  g.font = "11px system-ui"; g.fillStyle = "#6b7c8d"; g.strokeStyle = "#16222e"; g.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = T + ph - ph * i / 4; g.beginPath(); g.moveTo(L, y); g.lineTo(w - R, y); g.stroke();
+    g.fillText(String(Math.round(maxV * i / 4)), 4, y + 4);
+  }
+  ["-60m", "-30m", "now"].forEach((lab, i) => g.fillText(lab, L + pw * i / 2 - (i === 2 ? 22 : i ? 12 : 0), h - 4));
+  if (pts.length < 2) { g.fillStyle = "#8697a8"; g.fillText("Collecting data... (a point every 10 s)", L + 10, T + ph / 2); return; }
+  const X = t => L + pw * (t - t0) / 3600, Y = v => T + ph - ph * v / maxV;
+  const grad = g.createLinearGradient(0, T, 0, T + ph); grad.addColorStop(0, "rgba(34,211,238,.35)"); grad.addColorStop(1, "rgba(34,211,238,0)");
+  g.beginPath(); g.moveTo(X(pts[0][0]), Y(0)); pts.forEach(p => g.lineTo(X(p[0]), Y(p[1]))); g.lineTo(X(pts[pts.length - 1][0]), Y(0));
+  g.closePath(); g.fillStyle = grad; g.fill();
+  g.beginPath(); pts.forEach((p, i) => i ? g.lineTo(X(p[0]), Y(p[1])) : g.moveTo(X(p[0]), Y(p[1])));
+  g.strokeStyle = "#22d3ee"; g.lineWidth = 2; g.stroke();
+}
+
+// ---------------- polling ----------------
+async function poll() {
+  try { render(await api("/api/status")); }
+  catch (e) { if (e.message !== "signed out") { $("pillText").textContent = "NO CONNECTION"; $("pill").className = "pill error"; } }
+  setTimeout(poll, 1000);
+}
+
+// ---------------- video events ----------------
+$("feed").addEventListener("load", () => { if (streaming && $("feed").src !== BLANK) feedReady = true; if (S) render(S); });
+$("feed").addEventListener("error", () => { if (streaming) { streaming = false; feedReady = false; } });
+document.addEventListener("visibilitychange", () => { if (S) render(S); });
+
+// ---------------- actions ----------------
+async function act(fn, okMsg) {
+  if (busy) return; busy = true;
+  try { const d = await fn(); if (okMsg) toast(typeof okMsg === "function" ? okMsg(d) : okMsg); }
+  catch (e) { toast("&#9888;&#65039; " + esc(e.message), 5000); }
+  busy = false;
+  try { render(await api("/api/status")); } catch (_) {}
+}
+const start = () => act(() => post("/api/camera/start"), "Starting camera...");
+$("startBtn").onclick = start; $("bigStart").onclick = start; $("retryBtn").onclick = start;
+$("stopBtn").onclick = () => act(() => post("/api/camera/stop"), "Camera stopped. Webcam released.");
+$("snapBtn").onclick = () => act(() => post("/api/snapshot"),
+  d => `Saved on the laptop (snapshots folder). <a href="/files/snapshots/${encodeURIComponent(d.file)}" target="_blank" rel="noopener">Open</a>`);
+$("boxBtn").onclick = () => act(() => post("/api/settings", {show_boxes: !S.view.show_boxes}));
+$("recBtn").onclick = () => act(() => post("/api/record", {on: !S.camera.recording}),
+  S && S.camera.recording ? "Recording stopped." : "Recording to the laptop's recordings folder.");
+$("fullBtn").onclick = () => {
+  const st = $("stage");
+  if (document.fullscreenElement || document.webkitFullscreenElement) { (document.exitFullscreen || document.webkitExitFullscreen).call(document); return; }
+  if (st.classList.contains("theater")) { st.classList.remove("theater"); return; }
+  const fn = st.requestFullscreen || st.webkitRequestFullscreen;
+  if (fn) fn.call(st).catch(() => st.classList.add("theater")); else st.classList.add("theater");
+};
+$("qBtn").onclick = () => {
+  qMode = {auto: "high", high: "low", low: "auto"}[qMode];
+  try { localStorage.setItem("classync_quality", qMode); } catch (_) {}
+  toast("Video quality: " + {auto: "Auto (HD on laptop, data saver on phone/internet)", high: "HD", low: "Data saver (faster on slow internet)"}[qMode]);
+  if (S) render(S);
+};
+$("stage").addEventListener("click", e => { if ($("stage").classList.contains("theater") && e.target.id === "feed") $("stage").classList.remove("theater"); });
+
+// menu
+$("menuBtn").onclick = e => { e.stopPropagation(); $("dropdown").classList.toggle("hidden"); };
+document.addEventListener("click", () => $("dropdown").classList.add("hidden"));
+$("logoutBtn").onclick = async () => { try { await post("/api/logout"); } catch (_) {} location.replace("/login"); };
+$("logLink").onclick = () => { location.href = "/api/log.csv"; };
+
+// modals
+function openModal(id) { $(id).classList.remove("hidden"); }
+document.querySelectorAll("[data-close]").forEach(b => b.onclick = () => b.closest(".modal").classList.add("hidden"));
+document.querySelectorAll(".modal").forEach(m => m.addEventListener("click", e => { if (e.target === m) m.classList.add("hidden"); }));
+
+// ---------------- settings ----------------
+const FIELDS = ["camera_index","resolution","fps","jpeg_quality","detection_enabled","model","confidence","detect_every_ms",
+  "show_boxes","max_occupancy","allow_lan","allow_tailscale","viewers_can_start","auto_stop_minutes","log_counts","esp32_link","esp32_port","esp32_mode","esp32_host",
+  "public_access","allow_requests","google_verification"];
+for (let i = 0; i <= 5; i++) $("s_camera_index").insertAdjacentHTML("beforeend", `<option value="${i}">${i}</option>`);
+function showRanges() { $("qv").textContent = $("s_jpeg_quality").value + "%"; $("cv").textContent = Math.round($("s_confidence").value * 100) + "% sure"; }
+$("s_jpeg_quality").oninput = showRanges; $("s_confidence").oninput = showRanges;
+$("mSettingsBtn").onclick = async () => {
+  try {
+    const c = await api("/api/settings");
+    FIELDS.forEach(k => {
+      const el = $("s_" + k);
+      if (el.type === "checkbox") { el.checked = !!c[k]; return; }
+      if (el.tagName === "SELECT" && ![...el.options].some(o => o.value === String(c[k])))
+        el.insertAdjacentHTML("beforeend", `<option value="${esc(c[k])}">${esc(c[k])}</option>`);
+      el.value = String(c[k]);
+    });
+    showRanges(); $("camList").textContent = ""; openModal("mSettings");
+  } catch (e) { toast(esc(e.message)); }
+};
+$("findCams").onclick = async () => {
+  $("camList").textContent = "Searching... (the camera must be stopped)";
+  try {
+    const d = await api("/api/cameras");
+    $("camList").textContent = d.cameras.length ? "Found: " + d.cameras.map(c => `camera ${c.index} (${c.size})`).join(", ") : "No camera found. Check the USB cable.";
+  } catch (e) { $("camList").textContent = e.message; }
+};
+$("saveSettings").onclick = async () => {
+  const data = {};
+  FIELDS.forEach(k => {
+    const el = $("s_" + k);
+    if (el.type === "checkbox") data[k] = el.checked;
+    else if (["camera_index","fps","jpeg_quality","detect_every_ms","max_occupancy","auto_stop_minutes"].includes(k)) {
+      const n = parseInt(el.value, 10); if (!isNaN(n)) data[k] = n;
+    }
+    else if (k === "confidence") { const n = parseFloat(el.value); if (!isNaN(n)) data[k] = n; }
+    else if (k === "google_verification") {
+      const v = el.value.trim(), m = v.match(/content\s*=\s*["']([^"']+)["']/i);
+      data[k] = m ? m[1] : v;
+    }
+    else data[k] = el.value.trim();
+  });
+  try { await post("/api/settings", data); $("mSettings").classList.add("hidden"); toast("&#9989; Settings saved."); }
+  catch (e) { toast("&#9888;&#65039; " + esc(e.message), 5000); }
+};
+
+// ---------------- people & sharing ----------------
+let lastPubKey = "";
+function renderPublic(s, force) {
+  const p = s.public; if (!p) return;
+  const key = JSON.stringify(p);
+  if (!force && key === lastPubKey) return;
+  lastPubKey = key;
+  const ts = p.tailscale || {};
+  let h = `<div class="frow"><label>Public link<span class="d">${p.enabled ? "ON: anyone with the link sees the front page; inside needs approval" : "OFF: internet visitors only see 'private'"}</span></label>
+    <label class="sw"><input type="checkbox" id="pubToggle" ${p.enabled ? "checked" : ""}><span></span></label></div>`;
+  if (!ts.installed) h += `<div class="warnbox">Tailscale is not installed on this laptop yet. Follow the guide (free) to get your permanent public address.</div>`;
+  else if (!ts.url) h += `<div class="warnbox">Tailscale is installed but not signed in. Open Tailscale and sign in.</div>`;
+  else {
+    h += `<div class="note">Your permanent public address:</div><div class="url"><code>${esc(ts.url)}</code><button class="btn" data-copy="${esc(ts.url)}">Copy</button></div>`;
+    h += ts.funnel ? `<div class="note">&#128994; The internet door (Tailscale Funnel) is open.</div>`
+                   : `<div class="warnbox">The internet door is closed. On the laptop, double-click <b>Make Public Link.bat</b> once.</div>`;
+  }
+  $("pubBox").innerHTML = h;
+  $("pubToggle").onchange = e => act(() => post("/api/settings", {public_access: e.target.checked}),
+    e.target.checked ? "Public link ON. Visitors must be approved to see anything." : "Public link OFF.");
+  $("pubBox").querySelectorAll("[data-copy]").forEach(b => b.onclick = () => copy(b.dataset.copy));
+}
+async function loadUsers() {
+  if (!S || S.user.role !== "admin") return;
+  const d = await api("/api/users");
+  $("reqList").innerHTML = d.requests.length ? d.requests.map(r => `<div class="urow" style="flex-wrap:wrap">
+      <span class="n">${esc(r.full_name)} <span class="role">@${esc(r.username)} · ${ago(r.time)}</span>${r.note ? `<br><span class="note">${esc(r.note)}</span>` : ""}</span>
+      <button class="btn primary" data-ok="${esc(r.username)}">Approve</button><button class="btn danger" data-no="${esc(r.username)}">Deny</button></div>`).join("")
+    : '<div class="note">No requests waiting.</div>';
+  $("reqList").querySelectorAll("[data-ok]").forEach(b => b.onclick = async () => {
+    try { await post("/api/requests/approve", {username: b.dataset.ok, role: "viewer"}); toast("Approved as viewer. They can sign in now."); loadUsers(); } catch (e) { toast(esc(e.message)); }
+  });
+  $("reqList").querySelectorAll("[data-no]").forEach(b => b.onclick = async () => {
+    try { await post("/api/requests/deny", {username: b.dataset.no}); toast("Request denied."); loadUsers(); } catch (e) { toast(esc(e.message)); }
+  });
+  renderPublic(S, true);
+  $("userList").innerHTML = d.users.map(u => `<div class="urow"><span class="n">${esc(u.name)}</span><span class="tag ${u.role}">${u.role}</span>` +
+    (u.name === S.user.name ? '<span class="tag">you</span>' : `<button class="btn danger" data-del="${esc(u.name)}">Remove</button>`) + "</div>").join("");
+  $("userList").querySelectorAll("[data-del]").forEach(b => b.onclick = async () => {
+    if (!confirm("Remove " + b.dataset.del + "? They are signed out immediately.")) return;
+    try { await post("/api/users/delete", {username: b.dataset.del}); toast("Removed."); loadUsers(); } catch (e) { toast(esc(e.message)); }
+  });
+  const a = S.access || {local: "", lan: [], tailscale: []};
+  const row = (label, url) => `<div class="note">${label}</div><div class="url"><code>${esc(url)}</code><button class="btn" data-copy="${esc(url)}">Copy</button></div>`;
+  $("urls").innerHTML = row("On this laptop", a.local) +
+    a.lan.map(u => row("Phones on the same Wi-Fi", u)).join("") +
+    (a.tailscale.length ? a.tailscale.map(u => row("From anywhere (Tailscale, invited people only)", u)).join("")
+                        : '<div class="note">Tailscale: not connected on this laptop (optional, see guide).</div>');
+  $("urls").querySelectorAll("[data-copy]").forEach(b => b.onclick = () => copy(b.dataset.copy));
+}
+function copy(text) {
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(() => toast("Copied."));
+  else { const t = document.createElement("textarea"); t.value = text; document.body.appendChild(t); t.select();
+    try { document.execCommand("copy"); toast("Copied."); } catch (_) { toast(esc(text)); } t.remove(); }
+}
+$("mUsersBtn").onclick = async () => { $("nuResult").innerHTML = ""; openModal("mUsers"); try { await loadUsers(); } catch (e) { toast(esc(e.message)); } };
+$("nuAdd").onclick = async () => {
+  try {
+    const d = await post("/api/users", {username: $("nuName").value.trim(), role: $("nuRole").value, password: $("nuPass").value});
+    $("nuResult").innerHTML = `<div class="secret">Username: <b>${esc($("nuName").value.trim())}</b><br>Password: <b>${esc(d.password)}</b></div>
+      <div class="note" style="margin-top:6px">Send these privately. The password is shown only now.</div>`;
+    $("nuName").value = ""; $("nuPass").value = ""; loadUsers();
+  } catch (e) { toast("&#9888;&#65039; " + esc(e.message), 5000); }
+};
+$("pwSave").onclick = async () => {
+  try { const d = await post("/api/password", {old: $("pwOld").value, new: $("pwNew").value}); $("pwOld").value = ""; $("pwNew").value = ""; toast(esc(d.msg), 5000); }
+  catch (e) { toast("&#9888;&#65039; " + esc(e.message), 5000); }
+};
+
+window.addEventListener("resize", () => { if (S) drawChart(S.ai.history, S.time); });
+poll();
+</script>
+<script>
+// ======================= v3: one website for the whole CLASSYNC Stage 1 =======================
+// Own script: if anything here ever fails, the original Live CCTV page above keeps working.
+(function () {
+"use strict";
+const TABS = [["dash", "Overview"], ["live", "Live"], ["ctrl", "Control"], ["chat", "Messages"], ["att", "Attendance"],
+  ["people", "People"], ["faces", "Faces"], ["sec", "Security"], ["events", "History"], ["rfid", "RFID"], ["board", "Door board"],
+  ["ble", "Phone key"], ["wifi", "Wi-Fi radar"], ["health", "Health"], ["storage", "Storage"], ["logs", "Logs"]];
+const FAST = {ctrl: 8000, chat: 2500, dash: 3000, faces: 1500, board: 3000, ble: 3000, people: 6000, rfid: 6000, att: 10000, sec: 8000,
+  wifi: 15000, events: 0, health: 4000, storage: 15000, logs: 5000};
+let tab = "dash", timer = null, evBefore = 0, loading = false, peopleCache = [], fileFor = "";
+
+const q = id => document.getElementById(id);
+const E = s => esc(s == null ? "" : s);
+const St = () => (typeof S !== "undefined" ? S : null);
+const isAdmin = () => { const s = St(); return !!(s && s.user && s.user.role === "admin"); };
+function T(ts) { if (!ts) return "&ndash;"; const d = new Date(ts * 1000);
+  return d.toLocaleDateString([], {day: "2-digit", month: "short"}) + " " + d.toLocaleTimeString([], {hour: "2-digit", minute: "2-digit", second: "2-digit"}); }
+function B(n) { if (n == null) return "&ndash;"; const u = ["B", "KB", "MB", "GB", "TB"]; let i = 0; n = Number(n);
+  while (n >= 1024 && i < 4) { n /= 1024; i++; } return (i ? n.toFixed(1) : n) + " " + u[i]; }
+function D(s) { return (typeof dur === "function") ? dur(s) : Math.round(s) + " s"; }
+const SEVW = {ok: "OK", info: "Info", warn: "Warning", alert: "ALERT"};
+const sev = s => `<span class="sev ${E(s)}">${SEVW[s] || E(s)}</span>`;
+const dot = c => `<span class="dot ${c}"></span>`;
+const kpi = (n, label, cls = "") => `<div class="kpi ${cls}"><b>${n == null ? "&ndash;" : n}</b><span>${label}</span></div>`;
+const kv = rows => rows.map(([k, v]) => `<span>${k}</span><div>${v == null || v === "" ? "&ndash;" : v}</div>`).join("");
+const yes = v => v ? `${dot("g")}yes` : `${dot("x")}no`;
+async function get(path) { return api(path); }
+function evRow(e, full) {
+  const person = e.person_id ? `<b>${E(e.person_id)}</b>` : (e.name ? E(e.name) : "&ndash;");
+  return full ? `<tr><td class="mini">${e.id}</td><td class="nowrap">${T(e.ts)}</td><td>${sev(e.severity)}</td><td>${E(e.title)}</td><td>${person}</td>` +
+      `<td class="mini">${E(e.detail)}</td><td class="mini">${E(e.source)}</td><td class="mini">${E(e.device)}</td></tr>`
+    : `<tr><td class="nowrap mini">${T(e.ts)}</td><td>${sev(e.severity)}</td><td>${E(e.title)}</td><td>${person}</td><td class="mini">${E(e.detail)}</td></tr>`;
+}
+const empty = (cols, msg) => `<tr><td colspan="${cols}" class="empty">${msg}</td></tr>`;
+
+// ---------------- tabs ----------------
+function buildTabs() {
+  const nav = document.createElement("nav");
+  nav.className = "tabs"; nav.id = "tabs";
+  nav.innerHTML = TABS.map(([k, l]) => `<button data-tab="${k}">${l}${k === "sec" ? '<span class="cnt hidden" id="secCnt">0</span>' : k === "chat" ? '<span class="cnt hidden" id="chatCnt">0</span>' : ""}</button>`).join("");
+  nav.setAttribute("role", "tablist"); nav.setAttribute("aria-label", "Pages");
+  const top = document.querySelector("header.top");
+  top.after(nav);
+  const tb = document.createElement("button"); tb.className = "themebtn"; tb.id = "themeBtn"; tb.title = "Light / dark";
+  tb.setAttribute("aria-label", "Switch light or dark mode");
+  const spacer = top.querySelector(".spacer"); if (spacer) spacer.after(tb); else top.appendChild(tb);
+  const setIcon = () => { tb.textContent = document.documentElement.dataset.theme === "dark" ? "\u2600" : "\u263E"; };
+  if (!document.documentElement.dataset.theme) document.documentElement.dataset.theme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  setIcon();
+  tb.addEventListener("click", () => { const t = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    document.documentElement.dataset.theme = t; try { localStorage.setItem("sr-theme", t); } catch (_) {} setIcon(); });
+  const setH = () => document.documentElement.style.setProperty("--toph", top.offsetHeight + "px");
+  setH(); window.addEventListener("resize", setH);
+  nav.addEventListener("click", ev => { const b = ev.target.closest("button[data-tab]"); if (b) show(b.dataset.tab); });
+  document.addEventListener("click", ev => { const g = ev.target.closest("[data-goto]"); if (g) show(g.dataset.goto); });
+}
+function show(name) {
+  if (!TABS.some(t => t[0] === name)) name = "dash";
+  tab = name;
+  document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.tab === name));
+  q("tab-live").classList.toggle("hidden", name !== "live");
+  TABS.forEach(([k]) => { if (k !== "live") { const p = q("tab-" + k); if (p) p.classList.toggle("hidden", k !== name); } });
+  try { history.replaceState(null, "", "#" + name); } catch (_) {}
+  const b = document.querySelector(`#tabs button[data-tab="${name}"]`); if (b) b.scrollIntoView({block: "nearest", inline: "nearest"});
+  if (name === "events") { evBefore = 0; loadEvents(false); }
+  refresh(true);
+}
+async function refresh(now) {
+  clearTimeout(timer);
+  if (tab !== "live" && !loading) {
+    loading = true;
+    try { await (LOADERS[tab] || (() => 0))(); } catch (e) { if (e && e.message !== "signed out") console.warn(tab, e); }
+    loading = false;
+  }
+  const ms = FAST[tab]; if (ms) timer = setTimeout(refresh, document.hidden ? Math.max(ms, 15000) : ms);
+  if (!now) badge();
+}
+let badgeAt = 0;
+async function badge() {
+  if (Date.now() - badgeAt < 8000) return; badgeAt = Date.now();
+  try {
+    const m = await get("/api/v4/messages?chat=all&after=999999999&seen=" + seenMsg());
+    const n = Object.values(m.unread || {}).reduce((a, b) => a + b, 0), c = q("chatCnt");
+    if (c) { c.textContent = n; c.classList.toggle("hidden", !n || tab === "chat"); }
+  } catch (_) {}
+}
+function seenMsg() { try { return Number(localStorage.getItem("sr-seen") || 0); } catch (_) { return 0; } }
+function setSeen(id) { try { if (id > seenMsg()) localStorage.setItem("sr-seen", String(id)); } catch (_) {} }
+async function door(cmd, confirmText) {
+  if (confirmText && !confirm(confirmText)) return;
+  try { await post("/api/v4/door", {cmd}); toast("Sent to the door board: " + E(cmd)); } catch (e) { toast(E(e.message), 6000); }
+}
+function fillDays(sel, days, keep) {
+  const cur = sel.value; const first = sel.options[0] && sel.options[0].value === "" ? sel.options[0].outerHTML : "";
+  sel.innerHTML = first + days.map(d => `<option value="${d}">${d}</option>`).join("");
+  if (keep && [...sel.options].some(o => o.value === cur)) sel.value = cur;
+}
+
+// ---------------- dashboard ----------------
+async function loadDash() {
+  const [o, tr, dv] = await Promise.all([get("/api/v3/overview"), get("/api/v4/trend"), get("/api/v3/devices")]);
+  const b = o.board, hr = new Date().getHours(), s = St();
+  q("dashHello").textContent = (hr < 12 ? "Good morning" : hr < 17 ? "Good afternoon" : "Good evening") + (s && s.user ? ", " + s.user.name : "");
+  q("dashSub").innerHTML = `${new Date().toLocaleDateString([], {weekday: "long", day: "numeric", month: "long"})} &middot; ` +
+    `door board ${b.connected ? dot("g") + "online" : b.enabled ? dot("r") + "not reachable" : dot("x") + "not linked"} &middot; ` +
+    `camera ${o.camera === "live" ? dot("g") + "on" : dot("x") + "off"} &middot; face check ${o.face_state === "running" ? dot("g") + "on" : dot("x") + E(o.face_state)}`;
+  q("dashKpis").innerHTML = [
+    kpi(`${o.present_today.length}<small style="font-size:15px;color:var(--muted)"> / ${o.registered}</small>`, "Present today", "ok"),
+    kpi(o.in_room_now.length, "Recognised in the room", "acc"),
+    kpi(o.people_now == null ? "&ndash;" : o.people_now, "People in view"),
+    kpi(o.verified_today, "Entries confirmed by CCTV", "ok"),
+    kpi(o.mismatches_today, "Mismatches today", o.mismatches_today ? "bad" : ""),
+    kpi(o.unknown_today, "Unknown faces or cards", o.unknown_today ? "bad" : ""),
+    kpi(o.alerts_today, "Alerts today", o.alerts_today ? "bad" : ""),
+    kpi(o.visitors_today, "Visitors today"),
+    kpi(o.r2.visits, "Wi-Fi radar visits"),
+    kpi(o.events_total.toLocaleString(), "Events stored")].join("");
+  chart(q("dashChart"), tr.days);
+  const v8 = dv.board.v8 || {}, h = v8.health || {}, ble = v8.ble || {}, c = v8.counts || {};
+  const near = (ble.phones || []).map(p => `${E(p.name)} ${p.signal} dBm`).join(", ");
+  q("dashBoard").innerHTML = b.connected && v8.version ? kv([["Status", dot("g") + "online &middot; v" + E(v8.version)], ["Wi-Fi", E(h.wifi) + " &middot; " + h.wifi_rssi + " dBm"],
+      ["Present / visitors", (c.present_today || 0) + " / " + (c.visitors_today || 0)], ["Phone key", ble.on ? (ble.connected ? dot("g") + E(near || ble.connected + " connected") : dot("x") + "no phone near") : "off"],
+      ["Faces on door", ((v8.camera || {}).faces_saved || 0) + " of " + ((v8.camera || {}).students || 0)], ["Memory free", B(h.heap_free)],
+      ["Storage", B(h.storage_used) + " of " + B(h.storage_total)], ["Running for", D(v8.uptime || 0)]])
+    : `<div class="empty">${b.enabled ? "Door board not reachable. Is it switched on and on Wi-Fi?" : "Link the door board: menu &rsaquo; Settings &rsaquo; Door board link."}</div>`;
+  q("dashNow").innerHTML = o.in_room_now.length ? o.in_room_now.map(p => `<div class="who"><div class="av">${E(p.name).slice(0, 1).toUpperCase()}</div>` +
+      `<div><b>${E(p.name)}</b><small>in view since ${T(p.since)} &middot; ${o.present_today.includes(p.id) ? "checked in at the door" : "NOT checked in at the door"}</small></div></div>`).join("")
+    : `<div class="empty">${o.camera === "live" ? "Nobody recognised right now." : "The camera is off. Open Live and press Start."}` +
+      `${o.unknown_now ? " &middot; " + o.unknown_now + " unknown face(s) in view" : ""}</div>`;
+  q("dashRecent").innerHTML = o.recent.length ? o.recent.map(e => evRow(e)).join("") : empty(5, "No events yet.");
+  const sc = q("secCnt"); if (sc) { sc.textContent = o.alerts_today; sc.classList.toggle("hidden", !o.alerts_today); }
+}
+function chart(svg, days) {
+  if (!svg) return;
+  const W = 600, H = 190, pad = 24, n = Math.max(days.length, 1), max = Math.max(1, ...days.map(d => Math.max(d.entries || 0, d.alerts || 0)));
+  const bw = (W - pad * 2) / n, y = v => H - 26 - (H - 46) * (v / max);
+  let out = `<line x1="${pad}" y1="${H - 26}" x2="${W - pad}" y2="${H - 26}" stroke="var(--line)"/>`;
+  days.forEach((d, i) => {
+    const x = pad + i * bw, w = Math.min(26, bw * 0.28);
+    const bar = (v, dx, col) => `<rect x="${(x + bw / 2 + dx).toFixed(1)}" y="${y(v).toFixed(1)}" width="${w}" height="${(H - 26 - y(v)).toFixed(1)}" rx="5" fill="${col}"><title>${v}</title></rect>`;
+    out += bar(d.entries || 0, -w * 1.55, "var(--accent)") + bar(d.verified || 0, -w / 2, "var(--ok)") + bar(d.alerts || 0, w * 0.55, "var(--bad)");
+    out += `<text x="${(x + bw / 2).toFixed(1)}" y="${H - 8}" text-anchor="middle">${E(String(d.day).slice(5))}</text>`;
+  });
+  if (!days.length) out += `<text x="${W / 2}" y="${H / 2}" text-anchor="middle">No data yet</text>`;
+  svg.innerHTML = out;
+}
+
+// ---------------- attendance ----------------
+async function loadAtt() {
+  const day = q("attDate").value || "";
+  const a = await get("/api/v3/attendance" + (day ? "?day=" + encodeURIComponent(day) : ""));
+  if (!q("attDate").value) q("attDate").value = a.day;
+  fillDays(q("attDays"), a.days.length ? a.days : [a.day], true);
+  if ([...q("attDays").options].some(o => o.value === a.day)) q("attDays").value = a.day;
+  const present = a.people.filter(p => p.present).length;
+  q("attSum").textContent = `${present} of ${a.people.length} present on ${a.day} · ${a.visitors.length} visitor(s)`;
+  q("attBody").innerHTML = a.people.length ? a.people.map(p => `<tr><td><b>${E(p.name)}</b><div class="mini">${E(p.id)}</div></td>` +
+      `<td>${p.present ? sev("ok").replace("OK", "PRESENT") : '<span class="sev info">absent</span>'}</td><td class="nowrap">${T(p.first_entry)}</td>` +
+      `<td class="nowrap">${T(p.last_seen)}</td><td>${E(p.methods) || "&ndash;"}</td><td>${p.entries}</td>` +
+      `<td>${p.verified ? dot("g") + p.verified + "x" : (p.present ? dot("y") + "not yet" : "&ndash;")}</td><td>${p.mismatches ? '<b style="color:#f87171">' + p.mismatches + "</b>" : 0}</td></tr>`).join("")
+    : empty(8, "No people yet. Link the door board in Settings, or add people on the People page.");
+  q("attVisitors").innerHTML = a.visitors.length ? a.visitors.map(v => `<div class="who"><div class="av"></div><div><b>${E(v.name)}</b><small>${T(v.ts)} &middot; ${E(v.detail)}</small></div></div>`).join("")
+    : '<div class="empty">No visitors on this day.</div>';
+  q("attCsv").onclick = () => {
+    const rows = [["person_id", "name", "present", "first_entry", "last_seen", "how", "entries", "cctv_confirmed", "mismatches"]].concat(
+      a.people.map(p => [p.id, p.name, p.present ? "yes" : "no", p.first_entry ? new Date(p.first_entry * 1000).toLocaleString() : "",
+        p.last_seen ? new Date(p.last_seen * 1000).toLocaleString() : "", p.methods || "", p.entries, p.verified, p.mismatches]));
+    const csv = rows.map(r => r.map(x => `"${String(x).replace(/"/g, '""')}"`).join(",")).join("\r\n");
+    const l = document.createElement("a"); l.href = URL.createObjectURL(new Blob([csv], {type: "text/csv"}));
+    l.download = `attendance_${a.day}.csv`; l.click(); setTimeout(() => URL.revokeObjectURL(l.href), 2000);
+  };
+}
+
+// ---------------- people ----------------
+async function loadPeople() {
+  const d = await get("/api/v3/people");
+  peopleCache = d.people;
+  const camOn = !!(St() && St().camera && St().camera.state === "live");
+  q("pBody").innerHTML = d.people.length ? d.people.map(p => `<tr><td><b>${E(p.name)}</b>${p.in_room ? ' <span class="sev ok">in room</span>' : ""}<div class="mini">${E(p.id)}</div></td>` +
+      `<td>${p.source === "both" ? "door + laptop" : p.source === "board" ? "door board" : "laptop"}</td><td class="mini nowrap">${E(p.card) || "&ndash;"}</td>` +
+      `<td>${p.board_index == null ? "&ndash;" : yes(p.face_on_board)}</td><td>${p.laptop_faces ? dot("g") + p.laptop_faces : dot("y") + "none"}</td>` +
+      `<td class="nowrap mini">${T(p.first_seen)}</td><td class="nowrap mini">${T(p.last_seen)}</td><td>${p.appearances}</td><td>${p.auth_entries}</td>` +
+      `<td>${p.cctv_observations}</td><td>${p.verified}</td><td>${p.mismatches ? '<b style="color:#f87171">' + p.mismatches + "</b>" : 0}</td>` +
+      `<td class="mini">${E(p.devices) || "&ndash;"}</td><td class="adminOnly${isAdmin() ? "" : " hidden"}"><div class="rowact">` +
+      `<button class="btn sm primary" data-enroll="${E(p.id)}" ${camOn ? "" : 'disabled title="Start the camera on Live CCTV first"'}>Register face</button>` +
+      `<button class="btn sm" data-photo="${E(p.id)}">Add photo</button>` +
+      (p.laptop_faces ? `<button class="btn sm" data-clear="${E(p.id)}">Clear samples</button>` : "") +
+      (p.board_index == null ? `<button class="btn sm danger" data-del="${E(p.id)}">Delete</button>` : "") + `</div></td></tr>`).join("")
+    : empty(14, "No people yet. Link the door board (Settings > Door board link) - its students appear here automatically.");
+  q("pFoot").innerHTML = `Unknown detections so far: <b>${d.unknown_total}</b> &middot; Register face needs the camera ON (Live CCTV &rarr; Start).` +
+    ` Use 5 camera samples or 2-3 clear photos per person.`;
+}
+async function peopleAction(ev) {
+  const b = ev.target.closest("button"); if (!b) return;
+  try {
+    if (b.dataset.enroll) { await post("/api/v3/faces/enroll", {id: b.dataset.enroll}); toast("Registration started: look at the camera."); show("faces"); }
+    else if (b.dataset.photo) { fileFor = b.dataset.photo; q("pFile").value = ""; q("pFile").click(); }
+    else if (b.dataset.clear) { if (confirm("Remove all laptop face samples of " + b.dataset.clear + "?")) { await post("/api/v3/people/clearfaces", {id: b.dataset.clear}); toast("Samples removed."); loadPeople(); } }
+    else if (b.dataset.del) { if (confirm("Delete " + b.dataset.del + " from the laptop list?")) { await post("/api/v3/people/delete", {id: b.dataset.del}); toast("Deleted."); loadPeople(); } }
+  } catch (e) { toast(E(e.message)); }
+}
+async function uploadPhoto() {
+  const f = q("pFile").files[0]; if (!f || !fileFor) return;
+  toast("Reading the photo...", 8000);
+  try { const r = await api("/api/v3/faces/photo?id=" + encodeURIComponent(fileFor), {method: "POST", body: f, headers: {"Content-Type": f.type || "application/octet-stream"}});
+    toast(E(r.msg)); loadPeople(); } catch (e) { toast(E(e.message), 6000); }
+}
+
+// ---------------- face recognition ----------------
+async function loadFaces() {
+  const [f, u] = await Promise.all([get("/api/v3/faces/status"), get("/api/v3/unknown")]);
+  const camOn = !!(St() && St().camera && St().camera.state === "live");
+  q("fBanner").innerHTML = f.state === "error" ? `<div class="banner bad">Face recognition problem: ${E(f.error)}</div>`
+    : !camOn ? `<div class="banner warn">The CCTV camera is off, so faces are not being checked. Open <b>Live CCTV</b> and press Start.</div>`
+    : `<div class="banner">${dot("g")}Running &middot; ${f.ms} ms per check &middot; ${f.registered_people} people registered with laptop face samples.</div>`;
+  q("fNow").innerHTML = f.faces.length ? f.faces.map(x => `<div class="who"><div class="av" style="${x.known ? "" : "background:#3b1215;color:#fca5a5"}">${x.known ? E(x.name).slice(0, 1).toUpperCase() : "?"}</div>` +
+      `<div><b>${E(x.name)}</b><small>${x.known ? "similarity " + Math.round(x.score * 100) + "%" : x.far ? "too far away to recognise" : "not registered (best " + Math.round(x.score * 100) + "%)"} &middot; face ${x.size}px</small></div></div>`).join("")
+    : `<div class="empty">${camOn ? "No face in view." : "Camera is off."}</div>`;
+  const j = f.job;
+  if (j) {
+    const pct = Math.round(100 * j.got / Math.max(1, j.need));
+    q("fJob").innerHTML = `<div class="kv">${kv([["Person", `<b>${E(j.name)}</b>`], ["Status", j.status === "done" ? sev("ok").replace("OK", "DONE") : j.status === "running" ? '<span class="sev info">running</span>' : sev("warn").replace("Warning", E(j.status))],
+      ["Samples", `${j.got} of ${j.need}`]])}</div><div class="prog" style="margin:12px 0"><i style="width:${pct}%"></i></div><div class="note">${E(j.msg)}</div>` +
+      (j.status === "running" ? `<div style="margin-top:10px"><button class="btn sm danger" id="fCancel">Cancel</button></div>` : "");
+    const c = q("fCancel"); if (c) c.onclick = async () => { try { await post("/api/v3/faces/cancel"); } catch (e) { toast(E(e.message)); } };
+  }
+  q("fUnknown").innerHTML = u.photos.length ? u.photos.map(p => `<figure><a href="/files/unknown/${E(p.name)}" target="_blank" rel="noopener"><img loading="lazy" src="/files/unknown/${E(p.name)}" alt="unknown face"></a><figcaption>${T(p.t)}</figcaption></figure>`).join("")
+    : '<div class="empty">No unknown faces recorded.</div>';
+}
+
+// ---------------- security ----------------
+async function loadSec() {
+  const day = q("secDay").value;
+  const [d, o] = await Promise.all([get("/api/v3/events?severity=alert,warn&limit=300" + (day ? "&day=" + day : "")), get("/api/v3/overview")]);
+  q("secKpis").innerHTML = [kpi(o.alerts_today, "Alerts today", o.alerts_today ? "bad" : ""), kpi(o.warnings_today, "Warnings today", o.warnings_today ? "warn" : ""),
+    kpi(o.mismatches_today, "Mismatches today", o.mismatches_today ? "bad" : ""), kpi(o.unknown_today, "Unknown faces / cards today", o.unknown_today ? "bad" : "")].join("");
+  q("secBody").innerHTML = d.events.length ? d.events.map(e => `<tr><td class="nowrap">${T(e.ts)}</td><td>${sev(e.severity)}</td><td>${E(e.title)}</td>` +
+      `<td>${e.person_id ? "<b>" + E(e.person_id) + "</b>" : E(e.name) || "&ndash;"}</td><td class="mini">${E(e.detail)}</td><td class="mini">${E(e.source)}</td></tr>`).join("")
+    : empty(6, "Nothing that needs attention. ");
+  q("secCsv").onclick = () => { location.href = "/api/v3/events.csv?severity=alert,warn" + (day ? "&day=" + day : ""); };
+}
+
+// ---------------- door board pages ----------------
+async function devices() { return get("/api/v3/devices"); }
+async function loadRfid() {
+  const [d, ev] = await Promise.all([devices(), get("/api/v3/events?type=entry_card_face,unknown_card,card_locked,face_mismatch,security_lock,no_face,proxy_blocked,face_enrolled&limit=60")]);
+  const v8 = d.board.v8 || {}, r = v8.rfid || {}, ppl = v8.people || [], c = v8.counts || {};
+  q("rfidKpis").innerHTML = [kpi(d.board.connected ? (r.ok ? "OK" : "NO") : "&ndash;", "RC522 reader " + (r.version ? "(" + E(r.version) + ")" : ""), r.ok ? "ok" : "bad"),
+    kpi(ppl.length || "&ndash;", "Registered cards"), kpi(c.present_today, "Present today"), kpi(c.unknown_cards_total, "Unknown cards (all time)", c.unknown_cards_total ? "warn" : "")].join("");
+  if (r.learning) q("rfidKpis").insertAdjacentHTML("afterbegin", `<div class="banner warn" style="grid-column:1/-1">Waiting for a new card for <b>${E(r.learning)}</b>: tap it on the reader now.</div>`);
+  q("rfidCards").innerHTML = ppl.length ? ppl.map(p => `<tr><td><b>${E(p.id)}</b>${p.card_set === false && isAdmin() ? ` <button class="btn sm primary" data-door="learncard ${E(p.id)}">Add card</button>` : ""}</td><td class="mini">${E(p.card)}</td><td>${yes(p.face_saved)}</td>` +
+      `<td>${p.locked ? '<span class="sev alert">LOCKED</span>' : "no"}</td><td>${p.entries}</td><td>${p.rejects}</td><td>${p.locks}</td></tr>`).join("")
+    : empty(7, d.board.connected ? "The board did not send a card list." : "Door board not connected (Settings > Door board link).");
+  q("rfidEvents").innerHTML = ev.events.length ? ev.events.map(e => evRow(e)).join("") : empty(5, "No card events yet.");
+}
+async function loadBoard() {
+  const d = await devices(); const b = d.board, v8 = b.v8 || {}, h = v8.health || {}, c = v8.counts || {}, cam = v8.camera || {};
+  q("bBanner").innerHTML = !b.enabled ? `<div class="banner warn">Not linked yet. Settings &rarr; Door board link: ON, Over Wi-Fi, address = the one the board prints (type <b>wifi</b> in its Serial Monitor).</div>`
+    : !b.connected ? `<div class="banner bad">${E(b.error || "Cannot reach the door board.")}</div>`
+    : !v8.version ? `<div class="banner warn">Connected, but this board runs older firmware. Upload classync_stage1_v8 for all pages.</div>`
+    : `<div class="banner">${dot("g")}Online &middot; firmware v${E(v8.version)} &middot; ${E(v8.device_id)} &middot; updated ${ago(v8.seen)}</div>`;
+  q("bKpis").innerHTML = [kpi(c.present_today, "Present today", "ok"), kpi(c.visitors_today, "Visitors today"), kpi(c.openings_since_start, "Door openings since start"),
+    kpi(c.events_total, "Events on the board"), kpi(cam.faces_saved != null ? cam.faces_saved + "/" + cam.students : null, "Faces saved on door")].join("");
+  q("bConn").innerHTML = kv([["Link", b.enabled ? (b.connected ? dot("g") + "connected" : dot("r") + "not reachable") : dot("x") + "off"], ["Address", E(b.address)],
+    ["Wi-Fi network", E(h.wifi)], ["Signal", h.wifi_rssi ? h.wifi_rssi + " dBm" : null], ["Board IP", E(h.ip)], ["Clock", h.clock_set ? dot("g") + "set" : dot("y") + "not set"],
+    ["Uptime", v8.uptime != null ? D(v8.uptime) : null], ["Restarts", h.boots]]);
+  q("bSys").innerHTML = kv([["Door camera", cam.ok == null ? null : yes(cam.ok)], ["RFID reader", (v8.rfid || {}).ok == null ? null : yes(v8.rfid.ok)],
+    ["Phone key", (v8.ble || {}).on == null ? null : yes(v8.ble.on)], ["Unknown cards (total)", c.unknown_cards_total], ["Visitor passes (total)", c.visitors_total],
+    ["Phone-key entries (total)", c.phone_entries_total], ["Checked in (CCTV view)", b.checked_in]]);
+}
+async function loadBle() {
+  const [d, ev] = await Promise.all([devices(), get("/api/v3/events?type=entry_phone,phone_paired,phone_refused&limit=60")]);
+  const ble = (d.board.v8 || {}).ble || {};
+  q("bleKpis").innerHTML = [kpi(ble.on == null ? "&ndash;" : ble.on ? "ON" : "OFF", "Phone key", ble.on ? "ok" : "bad"),
+    kpi(ble.paired != null ? ble.paired + "/" + ble.max : null, "Phones paired"), kpi(ble.connected, "Connected now", "acc"),
+    kpi(ble.unlock_dbm != null ? ble.unlock_dbm + " dBm" : null, "Opens at (~30 cm)"),
+    kpi(ble.pairing ? "OPEN" : "closed", "Pairing window", ble.pairing ? "warn" : "")].join("") +
+    ((ble.phones || []).length ? `<div class="card" style="grid-column:1/-1"><table class="t"><thead><tr><th>Phone</th><th>Signal now</th><th>Opens at</th><th>Ready</th></tr></thead><tbody>` +
+      ble.phones.map(p => `<tr><td><b>${E(p.name)}</b></td><td>${p.signal} dBm</td><td>${ble.unlock_dbm} dBm</td><td>${p.ready ? dot("g") + "yes" : dot("y") + "move away, then come back"}</td></tr>`).join("") + "</tbody></table></div>" : "");
+  q("bleEvents").innerHTML = ev.events.length ? ev.events.map(e => evRow(e)).join("") : empty(5, "No phone key events yet.");
+}
+async function loadWifi() {
+  const d = await get("/api/v3/r2"); const t = d.totals, b = d.board_r2 || {};
+  q("wKpis").innerHTML = [kpi(t.visits, "Visits copied to the website"), kpi(t.passed, "Passed by"), kpi(t.stopped, "Stopped at the door"),
+    kpi(t.waited, "Waited 1 minute", t.waited ? "warn" : ""), kpi(b.visits != null ? b.visits : null, "Visits stored on the board")].join("");
+  const W = {passed: "passed by", stopped: "stopped at the door", waited: "WAITED 1 minute", motion: "moved in the dark"};
+  q("wBody").innerHTML = d.visits.length ? d.visits.map(v => `<tr><td>#${v.number}</td><td class="nowrap">${v.ts ? T(v.ts) : "time not set"}</td>` +
+      `<td>${E(W[v.kind] || v.kind)}</td><td>${v.seconds}</td></tr>`).join("")
+    : empty(4, "No Wi-Fi radar visits stored yet.");
+}
+
+// ---------------- event history ----------------
+function evQuery() {
+  const p = new URLSearchParams();
+  [["day", "evDay"], ["person", "evPerson"], ["severity", "evSev"], ["source", "evSrc"], ["q", "evQ"]].forEach(([k, id]) => { const v = q(id).value.trim(); if (v) p.set(k, v); });
+  return p;
+}
+async function loadEvents(more) {
+  const p = evQuery(); p.set("limit", "150"); if (more && evBefore) p.set("before", evBefore);
+  const d = await get("/api/v3/events?" + p.toString());
+  const html = d.events.map(e => evRow(e, true)).join("");
+  if (more) q("evBody").insertAdjacentHTML("beforeend", html);
+  else q("evBody").innerHTML = html || empty(8, "No events match.");
+  if (d.events.length) evBefore = d.events[d.events.length - 1].id;
+  q("evMore").disabled = d.events.length < 150;
+}
+async function evInit() {
+  try {
+    const [a, pp] = await Promise.all([get("/api/v3/attendance"), get("/api/v3/people")]);
+    fillDays(q("evDay"), a.days, true); fillDays(q("secDay"), a.days, true);
+    const cur = q("evPerson").value;
+    q("evPerson").innerHTML = '<option value="">Everyone</option>' + pp.people.map(p => `<option value="${E(p.id)}">${E(p.name)}</option>`).join("");
+    q("evPerson").value = cur;
+  } catch (_) {}
+}
+
+// ---------------- health / storage / logs ----------------
+async function loadHealth() {
+  const d = await devices(); const l = d.laptop, h = (d.board.v8 || {}).health || {};
+  q("hLaptop").innerHTML = kv([["Website version", "v" + E(l.version)], ["System", E(l.system)], ["Python", E(l.python)], ["CPU cores", l.cpus],
+    ["Running for", D(l.uptime)], ["CCTV camera", `${l.camera.state === "live" ? dot("g") : dot("x")}${E(l.camera.state)} ${l.camera.fps ? "&middot; " + l.camera.fps + " fps &middot; " + l.camera.width + "x" + l.camera.height : ""}`],
+    ["People AI", `${E(l.people_ai.state)} &middot; ${E(l.people_ai.model)} &middot; ${l.people_ai.ms} ms`],
+    ["Face AI", `${l.face_ai.state === "running" ? dot("g") : dot("x")}${E(l.face_ai.state)} &middot; ${l.face_ai.ms} ms ${l.face_ai.error ? "&middot; " + E(l.face_ai.error) : ""}`],
+    ["Disk free", B(l.disk_free) + " of " + B(l.disk_total)]]);
+  q("hBoard").innerHTML = d.board.connected && h.heap_free != null ? kv([["Status", dot("g") + "online"], ["Memory free", B(h.heap_free) + " (lowest " + B(h.heap_min) + ")"],
+    ["PSRAM free", B(h.psram_free) + " of " + B(h.psram_total)], ["Wi-Fi", E(h.wifi) + " &middot; " + h.wifi_rssi + " dBm"], ["Clock", h.clock_set ? "set" : "not set"],
+    ["Restarts", h.boots]]) : `<div class="empty">${d.board.enabled ? "Door board not reachable." : "Door board not linked (Settings)."}</div>`;
+}
+async function loadStorage() {
+  const d = await get("/api/v3/storage"); const l = d.laptop, b = d.board, r = l.records;
+  q("sLaptop").innerHTML = kv([["Disk free", B(l.disk_free) + " of " + B(l.disk_total)], ["Database", B(l.sizes.database) + " &middot; " + E(l.database_file)],
+    ["Events stored", r.events], ["People", r.people], ["Face samples", r.faces], ["Wi-Fi radar visits", r.r2], ["Keeping since", T(r.since)],
+    ["Unknown-face photos", B(l.sizes.unknown_faces)], ["Snapshots", B(l.sizes.snapshots)], ["Recordings", B(l.sizes.recordings)]]);
+  q("sBoard").innerHTML = b.storage_total ? kv([["Event storage", B(b.storage_used) + " used of " + B(b.storage_total)],
+    ["Settings memory (NVS)", b.nvs_used + " of " + b.nvs_total + " entries"], ["Events on the board", b.events_total],
+    ["Room left", B(b.storage_total - b.storage_used) + " (about " + Math.round((b.storage_total - b.storage_used) / 80).toLocaleString() + " more events)"]])
+    : '<div class="empty">Door board not connected.</div>';
+}
+async function loadLogs() {
+  const d = await get("/api/v3/logs"); const lv = {info: "info", warn: "warn", alert: "alert", ok: "ok"};
+  q("lSys").innerHTML = d.logs.length ? d.logs.map(l => `<tr><td class="nowrap mini">${T(l.t)}</td><td>${sev(lv[l.level] || "info")}</td><td>${E(l.msg)}</td></tr>`).join("") : empty(3, "Nothing logged yet.");
+  q("lAlerts").innerHTML = d.alerts.length ? d.alerts.map(a => `<tr><td class="nowrap mini">${T(a.t)}</td><td>${sev(lv[a.level] || "info")}</td><td>${E(a.msg)}</td></tr>`).join("") : empty(3, "No alerts.");
+}
+
+async function loadCtrl() {
+  const [d, c] = await Promise.all([devices(), isAdmin() ? get("/api/v4/control") : Promise.resolve(null)]);
+  const b = d.board, ppl = ((b.v8 || {}).people || []);
+  q("cBanner").innerHTML = !isAdmin() ? '<div class="banner warn">Only an admin can control the door.</div>'
+    : !b.connected ? '<div class="banner bad">The door board is not connected, so door commands cannot be sent. Check Door board.</div>'
+    : `<div class="banner">${dot("g")}Door board online &middot; commands are carried out within about a second.</div>`;
+  const opts = ppl.map(p => `<option value="${E(p.id)}">${E(p.id)}${p.card_set === false ? " (no card yet)" : ""}</option>`).join("") || '<option value="">(link the door board)</option>';
+  for (const id of ["cCardWho", "cForgetWho"]) { const el = q(id), cur = el.value; el.innerHTML = opts; if (cur) el.value = cur; }
+  const noCard = ppl.find(p => p.card_set === false); if (noCard && !q("cCardWho").dataset.touched) q("cCardWho").value = noCard.id;
+  if (c) {
+    if (document.activeElement !== q("iTopic")) q("iTopic").value = c.ntfy_topic || "";
+    if (document.activeElement !== q("iHook")) q("iHook").value = c.webhook_url || "";
+    q("iPhone").checked = !!c.phone_alerts; q("iHookEv").value = c.webhook_events || "alerts";
+    q("iOut").textContent = `sent to phone ${c.outbox.sent.phone}, webhook ${c.outbox.sent.webhook}, failed ${c.outbox.sent.failed}`;
+    q("bkList").innerHTML = c.backups.length ? c.backups.map(x => `<tr><td>${E(x.name)}</td><td>${T(x.t)}</td><td>${B(x.size)}</td></tr>`).join("") : empty(3, "No backup yet.");
+  }
+}
+let chatWith = "all", chatLast = 0, chatUsers = [];
+async function loadChat() {
+  if (!chatUsers.length) { try { const u = await get("/api/v4/chat/users"); chatUsers = u.users; } catch (_) {} }
+  const d = await get(`/api/v4/messages?chat=${encodeURIComponent(chatWith)}&after=${chatLast}&seen=${seenMsg()}`);
+  const un = d.unread || {};
+  q("chatList").innerHTML = [["all", "Family (everyone)"]].concat(chatUsers.map(u => [u, u])).map(([k, l]) =>
+    `<button class="${k === chatWith ? "on" : ""}" data-chat="${E(k)}"><span>${E(l)}</span>${un[k] && k !== chatWith ? `<span class="n">${un[k]}</span>` : ""}</button>`).join("");
+  const box = q("chatMsgs"), atEnd = box.scrollHeight - box.scrollTop - box.clientHeight < 60;
+  if (!chatLast && !d.messages.length) box.innerHTML = '<div class="empty">No messages yet. Say hello.</div>';
+  if (d.messages.length && !chatLast) box.innerHTML = "";
+  d.messages.forEach(m => { box.insertAdjacentHTML("beforeend", `<div class="bub ${m.sender === d.me ? "me" : "them"}">${m.sender === d.me ? "" : "<b>" + E(m.sender) + "</b><br>"}${E(m.text)}<small>${T(m.ts)}</small></div>`);
+    chatLast = Math.max(chatLast, m.id); });
+  if (d.messages.length && (atEnd || chatLast === d.messages[d.messages.length - 1].id)) box.scrollTop = box.scrollHeight;
+  setSeen(d.last); const cc = q("chatCnt"); if (cc) cc.classList.add("hidden");
+}
+async function sendChat() {
+  const t = q("chatText").value.trim(); if (!t) return;
+  q("chatSend").disabled = true;
+  try { await post("/api/v4/messages", {to: chatWith, text: t}); q("chatText").value = ""; await loadChat(); } catch (e) { toast(E(e.message)); }
+  q("chatSend").disabled = false; q("chatText").focus();
+}
+
+const LOADERS = {ctrl: loadCtrl, chat: loadChat, dash: loadDash, att: loadAtt, people: loadPeople, faces: loadFaces, sec: loadSec, rfid: loadRfid, board: loadBoard,
+  ble: loadBle, wifi: loadWifi, events: async () => {}, health: loadHealth, storage: loadStorage, logs: loadLogs};
+
+// ---------------- start ----------------
+function init() {
+  const main = document.querySelector("main"); main.id = "tab-live";
+  buildTabs();
+  q("pBody").addEventListener("click", peopleAction);
+  q("pFile").addEventListener("change", uploadPhoto);
+  q("pAdd").addEventListener("click", async () => {
+    const n = q("pName").value.trim(); if (!n) { toast("Type a name."); return; }
+    try { const r = await post("/api/v3/people/add", {name: n}); toast("Added: " + E(r.id)); q("pName").value = ""; loadPeople(); } catch (e) { toast(E(e.message)); }
+  });
+  q("attDays").addEventListener("change", () => { q("attDate").value = q("attDays").value; loadAtt(); });
+  q("attDate").addEventListener("change", () => loadAtt());
+  q("secDay").addEventListener("change", () => loadSec());
+  q("evGo").addEventListener("click", () => { evBefore = 0; loadEvents(false); });
+  q("evQ").addEventListener("keydown", e => { if (e.key === "Enter") { evBefore = 0; loadEvents(false); } });
+  q("evMore").addEventListener("click", () => loadEvents(true));
+  q("evCsv").addEventListener("click", () => { location.href = "/api/v3/events.csv?" + evQuery().toString(); });
+  evInit(); setInterval(evInit, 60000);
+  document.addEventListener("click", ev => { const b = ev.target.closest("[data-door]"); if (b) door(b.dataset.door, b.dataset.confirm); });
+  q("cCardWho").addEventListener("change", () => { q("cCardWho").dataset.touched = "1"; });
+  q("cLearn").addEventListener("click", () => { const w = q("cCardWho").value; if (w) door("learncard " + w); });
+  q("cForget").addEventListener("click", () => { const w = q("cForgetWho").value; if (w) door("forget " + w, "Delete the door face of " + w + "? The board restarts; the next card tap saves a new face."); });
+  const phoneName = () => q("cPhone").value.trim().toLowerCase().replace(/[^a-z0-9_]/g, "");
+  q("cPhoneAdd").addEventListener("click", () => { const n = phoneName(); if (n.length < 2) return toast("Type a phone name (letters and numbers)."); door("addphone " + n); });
+  q("cPhoneDel").addEventListener("click", () => { const n = phoneName(); if (n.length < 2) return toast("Type the phone name to remove."); door("removephone " + n, "Remove phone " + n + "?"); });
+  q("cNoteGo").addEventListener("click", async () => { const t = q("cNote").value.trim(); if (!t) return;
+    try { await post("/api/v4/notify", {text: t}); q("cNote").value = ""; toast("Sent to your phone."); } catch (e) { toast(E(e.message)); } });
+  q("cTestPhone").addEventListener("click", async () => { try { await post("/api/v4/test-phone", {}); toast("Test sent. Check the ntfy app."); } catch (e) { toast(E(e.message)); } });
+  q("iSave").addEventListener("click", async () => {
+    const d = {ntfy_topic: q("iTopic").value.trim(), phone_alerts: q("iPhone").checked, webhook_url: q("iHook").value.trim(), webhook_events: q("iHookEv").value};
+    if (q("iKey").value.trim()) d.door_key = q("iKey").value.trim();
+    try { await post("/api/v4/control", d); q("iKey").value = ""; toast("Saved."); loadCtrl(); } catch (e) { toast(E(e.message), 6000); } });
+  q("bkGo").addEventListener("click", async () => { try { const r = await post("/api/v4/backup", {}); toast("Backup saved: " + E(r.name)); loadCtrl(); } catch (e) { toast(E(e.message)); } });
+  q("chatList").addEventListener("click", ev => { const b = ev.target.closest("[data-chat]"); if (!b) return; chatWith = b.dataset.chat; chatLast = 0;
+    q("chatTitle").textContent = chatWith === "all" ? "Family" : chatWith; q("chatMsgs").innerHTML = ""; loadChat(); });
+  q("chatSend").addEventListener("click", sendChat);
+  q("chatText").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChat(); } });
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) refresh(true); });
+  const start = (location.hash || "").replace("#", "");
+  show(TABS.some(t => t[0] === start) ? start : "dash");
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
+})();
+</script>
+</body>
+</html>

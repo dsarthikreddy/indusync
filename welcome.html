@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#070b10">
+<title>SARTHIK Room - Smart Room occupancy with AI</title>
+<meta name="description" content="SARTHIK Room: a private smart-room system that counts people and objects with on-device AI, linked to RFID + face-recognition attendance. Live view only for approved users.">
+<meta property="og:title" content="SARTHIK Room">
+<meta property="og:description" content="Smart Room occupancy with on-device AI. Private live view for approved users.">
+<!--GSV-->
+<link rel="icon" href="/favicon.ico">
+<style>
+:root{--bg:#070b10;--line:#1d2a37;--text:#e8eef4;--muted:#8a9aab;--accent:#22d3ee}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--text);
+background:radial-gradient(1200px 700px at 0% -10%,#0d2b38 0,transparent 55%),radial-gradient(900px 600px at 100% 110%,#141f3a 0,transparent 55%),var(--bg);min-height:100vh}
+.wrap{max-width:1080px;margin:0 auto;padding:22px 20px 60px}
+nav{display:flex;align-items:center;gap:12px}
+.logo{width:40px;height:40px;border-radius:12px;background:#0b1016;border:1px solid #1d3a47;display:grid;place-items:center}
+nav b{font-size:16px;letter-spacing:.3px}.sp{flex:1}
+a.btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:var(--text);border:1px solid var(--line);background:#111b25;padding:11px 16px;border-radius:12px;font-weight:600;font-size:15px}
+a.btn.primary{background:linear-gradient(90deg,#22d3ee,#0ea5e9);color:#04202a;border:0}
+.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:36px;align-items:center;margin-top:56px}
+@media (max-width:860px){.hero{grid-template-columns:1fr;margin-top:30px}}
+.tag{display:inline-block;font-size:12px;letter-spacing:.8px;text-transform:uppercase;color:var(--accent);border:1px solid #1f4d5a;background:#0b2029;padding:6px 10px;border-radius:999px}
+h1{font-size:clamp(30px,5vw,48px);line-height:1.08;margin:16px 0 14px;letter-spacing:-1px}
+h1 span{background:linear-gradient(90deg,#22d3ee,#818cf8);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{color:#b6c3cf;font-size:17px;line-height:1.65;max-width:560px}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+.panel{border:1px solid var(--line);border-radius:22px;background:linear-gradient(180deg,#101a24,#0b131b);padding:18px;box-shadow:0 30px 80px rgba(0,0,0,.4)}
+.screen{aspect-ratio:16/10;border-radius:14px;background:#05080c;border:1px solid #152230;display:grid;place-items:center;position:relative;overflow:hidden}
+.screen .lock{text-align:center;color:var(--muted);font-size:14px;line-height:1.6}
+.screen .lock b{display:block;color:var(--text);font-size:16px;margin:10px 0 2px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.stats div{border:1px solid var(--line);border-radius:12px;padding:10px;background:#0a1118;font-size:12px;color:var(--muted)}
+.stats b{display:block;color:var(--text);font-size:18px;filter:blur(5px)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:64px}
+@media (max-width:860px){.grid{grid-template-columns:1fr}}
+.f{border:1px solid var(--line);border-radius:18px;background:#0d151e;padding:18px}
+.f h3{margin:10px 0 6px;font-size:16px}.f p{margin:0;color:var(--muted);font-size:14px;line-height:1.6}
+.ic{font-size:22px}
+footer{margin-top:50px;color:var(--muted);font-size:13px;text-align:center;line-height:1.7}
+/* SARTHIK Room design system v4 (sign-in / setup / request / welcome) */
+:root{--bg:#f5f5f7;--card:#fff;--line:#e3e3e8;--text:#1d1d1f;--muted:#6e6e73;--accent:#0071e3;--bad:#d70015;--ok:#1a9e4b;--field:#f2f2f5;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#000;--card:#161618;--line:#2c2c2e;--text:#f5f5f7;--muted:#98989d;--accent:#2997ff;--bad:#ff453a;--ok:#30d158;--field:#232326;color-scheme:dark}}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI Variable Text","Segoe UI",Inter,Roboto,sans-serif!important;
+  background:var(--bg)!important;color:var(--text)!important;-webkit-font-smoothing:antialiased}
+h1,h2{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI Variable Display","Segoe UI",Inter,sans-serif;letter-spacing:-.022em;font-weight:700}
+.card{background:var(--card)!important;border:1px solid var(--line)!important;border-radius:24px!important;box-shadow:0 1px 2px rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.08)!important;
+  animation:rise .4s cubic-bezier(.2,.8,.2,1)}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.logo{background:var(--text)!important;border:0!important}.logo svg circle{stroke:var(--bg)!important}.logo svg circle:last-child{fill:var(--bg)!important}
+input[type=text],input[type=password],input[type=email],textarea,select{background:var(--field)!important;border:1px solid transparent!important;color:var(--text)!important;border-radius:12px!important}
+input:focus,textarea:focus{border-color:var(--accent)!important;box-shadow:0 0 0 4px rgba(0,113,227,.15)!important}
+.row input{accent-color:var(--accent)!important}
+button.go,.btn.primary,a.btn.primary{background:var(--accent)!important;color:#fff!important;border-radius:999px!important;font-weight:600!important}
+.btn{border-radius:999px!important}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body data-requests="{{REQUESTS}}">
+<div class="wrap">
+  <nav>
+    <div class="logo"><svg width="24" height="24" viewBox="0 0 64 64"><circle cx="32" cy="32" r="14" fill="none" stroke="#22d3ee" stroke-width="6"/><circle cx="32" cy="32" r="5" fill="#22d3ee"/></svg></div>
+    <b>SARTHIK Room</b><div class="sp"></div>
+    <a class="btn" href="/login">Sign in</a>
+  </nav>
+
+  <section class="hero">
+    <div>
+      <span class="tag">VLSI-based smart room &middot; CLASSYNC 4.0</span>
+      <h1>Know who is in the room, <span>without anyone checking.</span></h1>
+      <p class="lead">SARTHIK Room counts people and recognises objects in a room using on-device AI,
+      and cross-checks the count with RFID + face-recognition attendance at the door to spot unregistered entries.
+      The live view is private: only people the owner approves can see it.</p>
+      <div class="cta">
+        <a class="btn primary" href="/login">Sign in</a>
+        <a class="btn" id="reqBtn" href="/request">Request access</a>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="screen"><div class="lock">
+        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="1.8"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+        <b>Live view is private</b>Sign in with an approved account to watch.
+      </div></div>
+      <div class="stats"><div><b>00</b>People now</div><div><b>00</b>Objects</div><div><b>00</b>Peak today</div></div>
+    </div>
+  </section>
+
+  <section class="grid">
+    <div class="f"><div class="ic">&#129302;</div><h3>On-device AI</h3><p>People and objects are counted on the owner's laptop. No video is sent to any cloud service.</p></div>
+    <div class="f"><div class="ic">&#128272;</div><h3>Permission first</h3><p>Anyone can ask for access, but nothing is visible until the owner approves. Access can be removed instantly.</p></div>
+    <div class="f"><div class="ic">&#128682;</div><h3>Linked to the door</h3><p>Compares the people count with RFID + face check-ins to warn about tailgating and over-capacity.</p></div>
+  </section>
+
+  <footer>SARTHIK Room &middot; Smart Room &middot; built on CLASSYNC 4.0 project &middot; Camera starts only when the owner switches it on.</footer>
+</div>
+<script>
+if (document.body.dataset.requests !== "1") document.getElementById("reqBtn").style.display = "none";
+</script>
+</body>
+</html>

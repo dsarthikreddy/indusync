@@ -1,0 +1,246 @@
+SARTHIK ROOM - STAGE 3 SETUP GUIDE (cloud, 24/7, no laptop needed, everything FREE, no card)
+=============================================================================================
+Time needed: about 1.5 hours the first time (WhatsApp is optional and adds ~20 minutes).
+You need: the laptop with the v4 website already installed, your Google account, your phone with Telegram.
+Rule for the whole guide: copy keys ONLY into the black "Setup Stage 3" window or the Google Sheet box.
+Never paste a key into chat, e-mail or code.
+
+WHAT EACH PART DOES (each one has its own job - nothing is duplicated)
+-----------------------------------------------------------------------
+ Door board v8.2      Decides who enters (card+face, phone key, QR). Works even with NO internet.
+                      Sends: events -> Firebase, sensor numbers -> ThingSpeak, panel -> Blynk, alarms -> Telegram.
+ Firebase (Google)    The 24/7 WEBSITE (https://<your-project>.web.app), the logins, the database, and the
+                      Control buttons that reach the door from anywhere.
+ Google Sheet script  The 24/7 MESSENGER and record book: Sheet log, e-mails, WhatsApp, 8 PM daily report,
+                      receives laptop CCTV alerts.
+ ThingSpeak           History GRAPHS for the 15 sensors.
+ Blynk                Quick PHONE PANEL (present count, temperature, alerts, "open door" button).
+ Telegram             INSTANT technical alarms + you can send /status or /open to the door.
+ WhatsApp             Family-friendly notices ("rozy arrived at 18:42") + daily summary to the admin.
+ E-mail               Reports you can keep (daily, weekly, monthly) + security alert summaries.
+ n8n (laptop)         Weekly and monthly reports (catches up if the laptop was off) + door watchdog.
+ Laptop website v4    CCTV face recognition + cross-check with the door (only while the laptop is on).
+
+FOLDERS IN THIS PACKAGE
+-----------------------
+ Setup Stage 3.bat          <- the setup program (double-click)
+ 1_Door_Board_v8_2          <- door firmware (v8.1 + cloud + 15 sensor slots)
+ 2_Website_v4               <- your laptop website, unchanged
+ 3_Google_Sheet\Code.gs     <- the Google Sheet script
+ 4_Cloud_Website            <- the 24/7 website (published by the setup program)
+ 5_n8n                      <- 2 workflows + "Start n8n.bat"
+ 6_Visitor_Pass_Maker       <- unchanged
+ tools                      <- the setup program's files (your keys are saved here: never share this folder)
+
+=============================================================================================
+PART 0 - BEFORE YOU START (10 minutes, once)
+=============================================================================================
+ 0.1  Unzip this package to  C:\SARTHIK_Room  (right-click the zip > Extract All > type C:\ > Extract).
+      If your v4 website already runs from another folder, that is fine: it keeps working. But the
+      setup program links the laptop website ONLY if 2_Website_v4 in THIS folder is the one you use.
+      Easiest: stop the old website (Stop SARTHIK Room.bat), then run 2_Website_v4\Install.bat from
+      this new folder once (your data is in the old folder's 2_Website_v4\data: copy that "data"
+      folder into the new 2_Website_v4 first, replacing the empty one).
+ 0.2  Install Node.js (needed to publish the website and run n8n):
+      https://nodejs.org > the big green "LTS" button > open the file > Next, Next, Next, Finish.
+      Check: press Windows key, type  cmd , Enter, type  node -v  , Enter. You see v22.x or newer.
+
+=============================================================================================
+PART 1 - RUN THE SETUP PROGRAM (it guides you; this list says what you will see)
+=============================================================================================
+Double-click  "Setup Stage 3.bat". A black window opens. Do each step it asks. If anything goes
+wrong it tells you exactly what to fix: fix it and double-click Setup again (finished steps are
+skipped automatically).
+
+STEP 1  Firebase project
+ 1. Open https://console.firebase.google.com  > sign in with your Google account.
+ 2. "Create a project" (or "Get started") > name: sarthik-room > Continue > Google Analytics: OFF > Create.
+ 3. Left menu: Build > Authentication > Get started > Email/Password > switch "Enable" ON > Save.
+    Then the "Settings" tab > User actions > make sure "Enable create (sign-up)" is TICKED for now > Save.
+    (You will untick it at the very end - the setup program reminds you.)
+ 4. Left menu: Build > Firestore Database > Create database > Location: asia-south1 (Mumbai) > Next
+    > "Start in production mode" > Create.
+ 5. Gear icon (top left) > Project settings > General > scroll to "Your apps" > the </> button (Web)
+    > nickname: website > do NOT tick Hosting > Register app.
+    You see a grey box starting with  const firebaseConfig = {
+ 6. Select that box from "const firebaseConfig" down to "};" > Ctrl+C.
+    In the black window: right-click (pastes) > press Enter twice.
+    You see: OK: project sarthik-room-xxxx
+
+STEP 2  Publish the website (automatic)
+ A browser opens: choose the same Google account > Allow. (If asked "Allow Firebase to collect
+ information?" type n and Enter.) Wait 1-2 minutes. You see:
+    OK: your 24/7 website is https://sarthik-room-xxxx.web.app
+ If it says "Publishing failed": you skipped Step 1.4 (Firestore). Do it and run Setup again.
+
+STEP 3  Logins (automatic, you type 3 things)
+ Your e-mail, a NEW password for the website (at least 10 characters - write it down on paper),
+ your name, and your WhatsApp number like 919876543210 (country code 91, no + and no spaces).
+ The door board and the Google Sheet get their own logins with strong passwords made for you.
+
+STEP 4  ThingSpeak (graphs)
+ 1. https://thingspeak.mathworks.com > Get Started For Free > Create one! > fill the form with your
+    e-mail > verify the e-mail they send you > choose a password.
+ 2. Top right: Account > My Profile > "API Keys" box > copy the "User API Key".
+ 3. Paste it in the black window. The program makes 2 channels with all 15 sensor names by itself.
+
+STEP 5  Blynk (phone panel)
+ 1. https://blynk.cloud > Sign Up > confirm your e-mail > set password.
+ 2. Left menu: Developer Zone > My Templates > + New Template > Name: SARTHIK Room, Hardware: ESP32,
+    Connection: WiFi > Done.
+ 3. In the template: Datastreams > + New Datastream > Virtual Pin, make these 5 (Save each):
+       V0  name Online       Data type Integer  min 0 max 1
+       V1  name Present      Integer  min 0 max 50
+       V2  name Temperature  Double   min -20 max 80   units Celsius
+       V3  name Alerts       Integer  min 0 max 1000
+       V10 name Open door    Integer  min 0 max 1
+    Then "Save" (top right).
+ 4. Web Dashboard tab: drag a "Label" for V1, V2, V3 and a "Switch" for V10 > Save.
+ 5. Left menu: Devices > + New Device > From template > SARTHIK Room > Create.
+    "Device info" shows BLYNK_AUTH_TOKEN "xxxxxxxx..." > copy the 32 characters between the quotes.
+ 6. Paste in the black window.
+ 7. Phone: install the "Blynk IoT" app > log in > the device appears; add the same widgets there.
+ Note: Blynk free is limited, so the board talks to Blynk every 3 minutes. The "Open door" switch
+ can take up to 3 minutes. For fast opening use the website (about 10 s) or Telegram /open (about 15 s).
+
+STEP 6  Telegram (instant alarms)
+ 1. Phone: Telegram > search  @BotFather  (blue tick) > Start > send  /newbot
+ 2. Name: SARTHIK Room   Username: e.g.  sarthik_room_alerts_bot  (must end with "bot"; if taken, add numbers)
+ 3. BotFather replies with a token like 123456789:AAH... > long-press > copy > send it to yourself on
+    the laptop (Telegram Desktop or web.telegram.org) > copy > paste in the black window.
+ 4. The program says "open @your_bot and press START". Do it on the phone, then press Enter.
+    It finds your chat number by itself and sends you a test message.
+
+STEP 7  WhatsApp (optional - type n to skip, add it later by running Setup again)
+ 7.1 https://developers.facebook.com > Log in (Facebook account) > "Get started" if asked (verify your
+     phone) > My Apps > Create App > Use case: "Other" > Next > App type: "Business" > Next
+     > App name: SARTHIK Room > Create app.
+ 7.2 On the app page find "WhatsApp" > Set up > if asked, create/choose a "Business portfolio" (any name).
+ 7.3 Left menu: WhatsApp > API Setup. You see "Test number" and "Phone number ID" (a long number) -
+     you will need the Phone number ID.
+     Under "To": Manage phone number list > Add phone number > your number > enter the code WhatsApp
+     sends you. Repeat for family members (max 5 numbers on the free test number).
+     Press "Send message" once: you receive "Hello World" on WhatsApp = it works.
+ 7.4 Permanent token (the one on the API Setup page expires in 24 hours - do NOT use it):
+     https://business.facebook.com > Settings (gear) > Users > System users > Add
+     > name: sarthik-room > role: Admin > Create.
+     Click it > Assign assets > Apps > SARTHIK Room > "Full control / Manage app" ON > Assign.
+     Again Assign assets > WhatsApp accounts > your test account > Full control ON > Assign.
+     Generate new token > App: SARTHIK Room > Token expiration: Never > tick
+     whatsapp_business_messaging and whatsapp_business_management > Generate token > Copy.
+     (It starts with EAA. You can see it only once. Paste it straight into the black window.)
+ 7.5 Black window: paste the token (typing is hidden - that is normal), then the Phone number ID,
+     then press Enter for the template name (hello_world = the safe first test).
+ 7.6 Your own message template (so messages say real things like "rozy arrived at 18:42"):
+     https://business.facebook.com > WhatsApp Manager > Message templates > Create template
+     > Category: Utility > Name: room_update > Language: English > Next
+     > Body:  SARTHIK Room home update: {{1}}
+     > Sample for {{1}}:  rozy arrived at 18:42 (card + face)
+     > Submit. Approval usually takes minutes to a few hours.
+     When it says "Active": open the Google Sheet > menu SARTHIK Room > 1. Enter settings > Cancel
+     (= one by one) > press OK for each until "WhatsApp template name" > type room_update > OK.
+
+STEP 8  Files (automatic)
+ It asks whose arrivals go to WhatsApp (door names, e.g. rozy) and the e-mail for reports.
+ It fills the door board's secrets.h and prepares ONE settings code for the Google Sheet.
+
+STEP 9  Google Sheet (24/7 messenger)
+ 1. Open https://sheets.new (a new Google Sheet) > top left "Untitled spreadsheet" > rename: SARTHIK Room
+ 2. Menu Extensions > Apps Script. A code page opens with  function myFunction() {...}  - select ALL
+    of it (Ctrl+A) and delete it.
+ 3. On the laptop open the folder 3_Google_Sheet > right-click Code.gs > Open with > Notepad
+    > Ctrl+A > Ctrl+C > back in Apps Script > Ctrl+V > click the disk icon (Save). Name: SARTHIK Room.
+ 4. Blue "Deploy" button > New deployment > gear next to "Select type" > Web app
+    > Description: v1 > Execute as: Me > Who has access: Anyone > Deploy
+    > "Authorize access" > your account > "Google hasn't verified this app" > Advanced
+    > "Go to SARTHIK Room (unsafe)" > Allow.   (It is YOUR script; this warning is normal.)
+    Copy the "Web app URL" (ends with /exec) > Done.
+ 5. Go back to the SHEET tab > press F5 (reload) > wait 5 s > new menu "SARTHIK Room" appears
+    > 1. Enter settings > (Authorize again if asked) > Ctrl+V (the settings code is already copied)
+    > OK > "Saved 12 settings".
+    > SARTHIK Room > 2. Start automatic jobs > OK.
+    > SARTHIK Room > 3. Test everything now > you see Firebase OK, Telegram ok, E-mail ok, WhatsApp ok/off.
+ 6. Paste the Web app URL into the black window > OK: the Sheet answers.
+ IMPORTANT: if you ever change Code.gs, use Deploy > Manage deployments > pencil > Version: New version
+ > Deploy. (A "New deployment" would change the URL.)
+
+STEP 10  Linking (automatic)
+ Writes the n8n settings and tells the laptop website to send CCTV alerts to the cloud.
+ Then the window says ALL DONE.
+
+LAST SAFETY STEP (do not skip):
+ Firebase console > Authentication > Settings > User actions > UNTICK "Enable create (sign-up)" > Save.
+ Now nobody can make new accounts from the internet. You add family members on the website's
+ Members page AND in Authentication > Users > Add user (same e-mail).
+
+=============================================================================================
+PART 2 - UPLOAD THE DOOR BOARD v8.2 (same way as v8.1)
+=============================================================================================
+ 1. Arduino IDE > File > Open > 1_Door_Board_v8_2\classync_stage1_v8_2\classync_stage1_v8_2.ino
+ 2. Tools: Board ESP32S3 Dev Module, PSRAM OPI PSRAM, Flash Size 16MB, Partition Scheme
+    "Custom" (partitions.csv in the folder - same as before), Port: your COM port.
+    Board package must still be esp32 version 2.0.17.
+ 3. Upload. Serial Monitor 115200. You see:
+      ===== CLASSYNC 4.0 v8.2: ... + CLOUD + 15 SENSOR SLOTS =====
+      Cloud: Firebase ON, ThingSpeak ON, Blynk ON, Telegram ON. Sensors on: chip_temp occupancy wifi_signal free_memory
+ 4. Type  cloud  > Enter. After a minute every line says "working".
+    Type  sensors > Enter. You see the 15 slots.
+ Everything from v8.1 works exactly as before: cards, faces, QR passes, phone key, laptop website,
+ 'wifi off' (cloud stops, door keeps working).
+
+=============================================================================================
+PART 3 - TEST EVERYTHING (10 minutes) - tick each line
+=============================================================================================
+ [ ] Phone browser (mobile data, NOT home Wi-Fi): open https://<project>.web.app > sign in.
+     Header shows "door online" (green).
+ [ ] Health page > "Run security check" > all lines say "blocked" (e.g. 6 of 6 blocked).
+ [ ] Tap your card + face on the door. Within ~10 s the Home page shows you as present.
+ [ ] Control page > Open door > the door opens within ~10 s. "Last command" shows "done".
+ [ ] Show a fake/used QR pass > Telegram alarm on your phone within ~10 s.
+ [ ] Telegram: send /status to your bot > it answers with present count and sensors.
+ [ ] Sensors page: chip_temp, occupancy, wifi_signal, free_memory show "ok". After 5 minutes the
+     graphs appear (ThingSpeak).
+ [ ] Google Sheet > "Events" tab gets new rows within 5 minutes.
+ [ ] Messages page: send a message; open the site on a second phone with another member > it arrives.
+ [ ] 8 PM: e-mail + Telegram (+ WhatsApp) daily report. (Or now: Sheet menu > Send today's report now.)
+ [ ] Laptop: double-click 5_n8n\Start n8n.bat (see PART 4) > Health page shows "n8n" time.
+ [ ] Pull the board's USB for 12 minutes while n8n runs > "Door board is OFFLINE" on Telegram + e-mail.
+
+=============================================================================================
+PART 4 - n8n ON THE LAPTOP (weekly/monthly reports + watchdog)
+=============================================================================================
+ 1. Double-click 5_n8n\Start n8n.bat. First time it downloads n8n (5-10 minutes) and imports the
+    2 workflows. Keep this window open while you want n8n running (minimise it).
+ 2. The browser opens http://localhost:5678 (if it shows an error, wait 1 minute and press F5).
+    First time: create the local owner account (any e-mail + password; it stays on this laptop).
+ 3. Overview > open "SARTHIK Room - weekly and monthly reports" > switch "Inactive" to ACTIVE
+    (in newer n8n the button is called "Publish") > back > same for "SARTHIK Room - door watchdog".
+ 4. Test: open a workflow > "Execute workflow" > the Code step turns green.
+ n8n is reachable only from this laptop (127.0.0.1), never from the internet.
+
+=============================================================================================
+PART 5 - DAILY USE
+=============================================================================================
+ Anywhere:       https://<project>.web.app (add it to the phone home screen: browser menu > Add to Home screen)
+ Telegram:       /status   /open   /help   (only YOUR chat; strangers are ignored)
+ New day:        press Control > Start new day (or type reset on the board), exactly as before.
+ Add Rozy's card: Control > Add a card > rozy > Start > tap her card within 60 s.
+ New member:     Members page > add e-mail + role; then Firebase > Authentication > Users > Add user.
+
+=============================================================================================
+PROBLEMS AND FIXES
+=============================================================================================
+ Website: "This account is not on the family list" -> Members page (admin) has no entry for that e-mail.
+ Website: "door offline" -> board unplugged / Wi-Fi down / Firebase keys wrong: type  cloud  on the board.
+ Board 'cloud' says "device login refused" -> secrets.h FB_DEVICE_* wrong: run Setup again (step 'files'
+          re-runs if you delete the line "files" from tools\stage3_state.json) and re-upload.
+ Board 'cloud' says "not allowed (rules / members list)" -> Members page must list door-1.board@sarthik.room
+          as "Door board". Setup step 3 does this; run it again if you deleted it.
+ Telegram says "chat not found" -> you never pressed START in your bot. Do it.
+ ThingSpeak "too fast or bad key" -> normal for one message after a restart; if it stays, re-run Setup.
+ Sheet test: "Firebase login failed" -> the settings code was not pasted fully: menu 1 again.
+ WhatsApp error 131030 -> that number is not in the test "To" list (step 7.3). Error 132001 -> template
+          name wrong or not approved yet: use hello_world until room_update is Active.
+ Free limits (more than enough for a family): Firebase 50,000 reads + 20,000 writes per day; the board
+          uses about 17,000 reads (including rule checks) and 1,500 writes, leaving 30,000+ for the family. ThingSpeak 8,200 messages/day (board ~4,300).
+          Blynk 100,000 messages/month (board ~75,000). Google Apps Script 90 min/day (script ~10 min).

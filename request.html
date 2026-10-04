@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#070b10">
+<title>Request access - SARTHIK Room</title>
+<link rel="icon" href="/favicon.ico">
+<style>
+:root{--bg:#070b10;--line:#1f2d3b;--text:#e8eef4;--muted:#8a9aab;--accent:#22d3ee;--bad:#f87171;--ok:#4ade80}
+*{box-sizing:border-box}html,body{min-height:100%}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--text);
+background:radial-gradient(1200px 600px at 10% -10%,#0e2a36 0,transparent 60%),var(--bg);display:flex;align-items:center;justify-content:center;padding:24px}
+.card{width:100%;max-width:460px;background:linear-gradient(180deg,#111c26,#0d151d);border:1px solid var(--line);border-radius:20px;padding:28px 24px;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+h1{font-size:20px;margin:0 0 6px}p{color:var(--muted);font-size:14px;line-height:1.55;margin:0 0 6px}
+label{display:block;font-size:13px;color:var(--muted);margin:13px 0 6px}
+input,textarea{width:100%;padding:12px 13px;border-radius:12px;border:1px solid var(--line);background:#0a1118;color:var(--text);font-size:16px;outline:none;font-family:inherit}
+textarea{resize:vertical;min-height:70px}
+input:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(34,211,238,.15)}
+button{width:100%;margin-top:18px;padding:14px;border:0;border-radius:12px;background:linear-gradient(90deg,#22d3ee,#0ea5e9);color:#04202a;font-weight:700;font-size:16px;cursor:pointer}
+button:disabled{opacity:.6}.err{min-height:20px;color:var(--bad);font-size:14px;margin-top:12px}
+.done{display:none;text-align:center}.done h1{color:var(--ok)}
+a{color:var(--accent)}.hint{font-size:12px;color:var(--muted);margin-top:5px}
+/* SARTHIK Room design system v4 (sign-in / setup / request / welcome) */
+:root{--bg:#f5f5f7;--card:#fff;--line:#e3e3e8;--text:#1d1d1f;--muted:#6e6e73;--accent:#0071e3;--bad:#d70015;--ok:#1a9e4b;--field:#f2f2f5;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#000;--card:#161618;--line:#2c2c2e;--text:#f5f5f7;--muted:#98989d;--accent:#2997ff;--bad:#ff453a;--ok:#30d158;--field:#232326;color-scheme:dark}}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI Variable Text","Segoe UI",Inter,Roboto,sans-serif!important;
+  background:var(--bg)!important;color:var(--text)!important;-webkit-font-smoothing:antialiased}
+h1,h2{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI Variable Display","Segoe UI",Inter,sans-serif;letter-spacing:-.022em;font-weight:700}
+.card{background:var(--card)!important;border:1px solid var(--line)!important;border-radius:24px!important;box-shadow:0 1px 2px rgba(0,0,0,.04),0 20px 60px rgba(0,0,0,.08)!important;
+  animation:rise .4s cubic-bezier(.2,.8,.2,1)}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.logo{background:var(--text)!important;border:0!important}.logo svg circle{stroke:var(--bg)!important}.logo svg circle:last-child{fill:var(--bg)!important}
+input[type=text],input[type=password],input[type=email],textarea,select{background:var(--field)!important;border:1px solid transparent!important;color:var(--text)!important;border-radius:12px!important}
+input:focus,textarea:focus{border-color:var(--accent)!important;box-shadow:0 0 0 4px rgba(0,113,227,.15)!important}
+.row input{accent-color:var(--accent)!important}
+button.go,.btn.primary,a.btn.primary{background:var(--accent)!important;color:#fff!important;border-radius:999px!important;font-weight:600!important}
+.btn{border-radius:999px!important}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<form class="card" id="f">
+  <div id="formPart">
+    <h1>Request access</h1>
+    <p>Fill this in. The owner of this room monitor will approve or deny it. You can sign in only after approval.</p>
+    <label for="n">Your full name</label><input id="n" autocomplete="name" required maxlength="40">
+    <label for="u">Choose a username</label><input id="u" autocomplete="username" autocapitalize="none" spellcheck="false" required maxlength="20">
+    <div class="hint">3-20 letters, numbers or _ (no spaces)</div>
+    <label for="p">Choose a password</label><input id="p" type="password" autocomplete="new-password" required>
+    <div class="hint">At least 8 characters. Only you know it; the owner never sees it.</div>
+    <label for="p2">Type the password again</label><input id="p2" type="password" autocomplete="new-password" required>
+    <label for="w">Why do you need access? (optional)</label><textarea id="w" maxlength="160" placeholder="e.g. Class teacher of this room"></textarea>
+    <button id="go" type="submit">Send request</button>
+    <div class="err" id="err"></div>
+    <p style="text-align:center;margin-top:10px">Already approved? <a href="/login">Sign in</a></p>
+  </div>
+  <div class="done" id="done">
+    <h1>&#9989; Request sent</h1>
+    <p>The owner will review it. After approval, sign in with the username and password you just chose.</p>
+    <p style="margin-top:16px"><a href="/login">Go to sign in</a></p>
+  </div>
+</form>
+<script>
+const $=id=>document.getElementById(id);
+$('f').onsubmit=async e=>{
+  e.preventDefault();$('err').textContent='';
+  if($('p').value!==$('p2').value){$('err').textContent='The two passwords are different.';return;}
+  $('go').disabled=true;
+  try{
+    const r=await fetch('/api/request',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','X-Classync':'1'},
+      body:JSON.stringify({full_name:$('n').value,username:$('u').value.trim(),password:$('p').value,note:$('w').value})});
+    const d=await r.json().catch(()=>({}));
+    if(r.ok){$('formPart').style.display='none';$('done').style.display='block';return;}
+    $('err').textContent=d.error||'Could not send the request.';
+  }catch(_){$('err').textContent='Cannot reach the monitor right now.';}
+  $('go').disabled=false;
+};
+$('n').focus();
+</script>
+</body>
+</html>
