@@ -1,0 +1,9 @@
+# private - never upload
+data/
+backups/
+.venv/
+*.pt
+*.db
+*.db-wal
+*.db-shm
+security.log

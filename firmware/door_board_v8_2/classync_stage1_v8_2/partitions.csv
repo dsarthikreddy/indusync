@@ -1,0 +1,13 @@
+# CLASSYNC 4.0 - program layout for the 16 MB ESP32-S3
+#
+# Why this file exists: it gives the program 6 MB instead of 3 MB, so there is
+# plenty of room for future additions (more sensors, Firebase, Telegram, e-mail).
+# "nvs" is kept at exactly the same place and size as before, so your saved
+# faces, used QR passes and paired phones are NOT lost.
+#
+# Name,   Type, SubType, Offset,   Size,      Notes
+nvs,      data, nvs,     0x9000,   0x5000,
+otadata,  data, ota,     0xe000,   0x2000,
+app0,     app,  ota_0,   0x10000,  0x600000,
+spiffs,   data, spiffs,  0x610000, 0x9E0000,
+coredump, data, coredump,0xFF0000, 0x10000,

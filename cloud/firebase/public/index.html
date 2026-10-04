@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<title>SARTHIK Room</title>
+<link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="manifest" href="manifest.json"><link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="icon.svg">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="description" content="SARTHIK Room smart door - private family dashboard">
+<link rel="stylesheet" href="style.css">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="config.js"></script>
+<script src="app.js" defer></script>
+</head><body>
+<div id="login" class="center hidden">
+  <form class="card auth" id="loginForm" autocomplete="on">
+    <div class="logo">S</div><h1>SARTHIK Room</h1><p class="muted">Smart Room &middot; sign in</p>
+    <label for="lEmail">E-mail</label><input id="lEmail" type="email" autocomplete="username" required>
+    <label for="lPass">Password</label><input id="lPass" type="password" autocomplete="current-password" required minlength="8">
+    <button class="btn primary wide" id="lGo" type="submit">Sign in</button>
+    <p class="err" id="lErr" role="alert"></p>
+    <p class="muted small">Only family members added by the owner can sign in.</p>
+  </form>
+</div>
+<div id="setupMissing" class="center hidden"><div class="card auth"><h1>Almost there</h1><p>This website is not connected to Firebase yet. Run <b>Setup Stage 3.bat</b> on the laptop, then deploy again.</p></div></div>
+<div id="app" class="hidden">
+  <header class="top"><div class="brand"><div class="logo sm">S</div><div><b>SARTHIK Room</b><small id="who"></small></div></div>
+    <span class="pill" id="pill"><i></i><span id="pillText">checking&hellip;</span></span>
+    <div class="sp"></div><button class="icon" id="themeBtn" aria-label="Light or dark">&#9790;</button><button class="btn sm" id="outBtn">Sign out</button></header>
+  <nav class="tabs" id="tabs" aria-label="Pages"></nav>
+  <main id="page" class="page"></main>
+</div>
+<div class="toast hidden" id="toast" role="status"></div>
+</body></html>

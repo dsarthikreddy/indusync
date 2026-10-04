@@ -1,3 +1,0 @@
-@echo off
-powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0tools\stop.ps1"
-timeout /t 3 >nul
