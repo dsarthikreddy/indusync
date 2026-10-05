@@ -25,6 +25,7 @@ Major project = IoT smart door/attendance system + VLSI designs (Cadence Virtuos
 | WhatsApp (Meta Cloud API test number) | NOT set up — Meta OTP never arrived; postponed |
 | MacroDroid on Pixel (Telegram notif -> Discord webhook + SMS) | optional, outside this repo |
 | VLSI: 2.4 GHz LNA, 13.56 MHz LNA, 4-bit R-2R DAC (Cadence) | DONE (exports to be added in vlsi/) |
+| VLSI: Smart Room Controller (Vivado, SystemVerilog, xsim) | DONE — 88-test safety chip, Artix-7 target, all simulators green |
 Firmware version on the board: **8.2.5** (string "version" in /api/door and Firestore devices/door-1).
 
 ## 2. Where things live
@@ -78,7 +79,7 @@ Serial 115200 "Newline". Program size ~72 % of app partition, static RAM ~34 %.
 3. Stage 2: wire ADS1115 + first sensors (SENSORS_GUIDE), enable slots one by one.
 4. Optional: real-time Blynk (persistent library) — only after a few stable days; measure memory first.
 5. Stage 4 ideas (agreed direction): ESP32-CAM doorway in/out counter -> tailgating alert, auto check-out, live occupancy, emergency roll-call, energy saver; later stereo liveness (anti-photo spoofing).
-6. VLSI next: digital = HMAC-SHA-256 + AES-128 security coprocessor (Vivado + ModelSim, UART link to ESP32); analog = low-power SAR ADC (Virtuoso) building on the R-2R DAC.
+6. VLSI Smart Room Controller: DONE (vlsi/smart_room_controller/ in repo). Next: synthesize for Artix-7, then digital security coprocessor (HMAC-SHA-256 + AES-128, Vivado + ModelSim, UART to ESP32); analog = low-power SAR ADC (Virtuoso) on R-2R DAC.
 
 ## 7. Never commit
 secrets.h, tools/stage3_state.json, tools/sheet_settings_code.txt, 5_n8n/n8n.env, n8n_data/, generated n8n JSON,

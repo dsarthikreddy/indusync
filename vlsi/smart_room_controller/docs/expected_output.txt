@@ -1,0 +1,184 @@
+==============================================================
+  SMART ROOM CONTROLLER - one full day at the classroom door
+  (room size for this test = 4 people)
+==============================================================
+
+[08:50] Morning. Power on.
+    PASS  door is locked
+    PASS  room empty, lights off (no power wasted)
+    PASS  no alarm, buzzer quiet
+
+[08:55] Ravi taps his card (class starts 09:00)
+    PASS  card alone does NOT open the door (face needed)
+           cloud <- ENTRY           time 08:55  people=0
+    PASS  face OK -> door unlocks
+    PASS  one short 'welcome' beep
+    PASS  people counter = 1
+    PASS  lights switch ON by themselves
+    PASS  no tailgating alarm (1 card, 1 person)
+    PASS  ENTRY (on time) sent to cloud
+    PASS  door locks again by itself after 3 s
+
+[08:55] Room gets hot
+    PASS  33 C -> fan speed 2
+    PASS  30 C -> fan slows to speed 1
+    PASS  27 C -> fan stays 1 (no flicker on/off at the edge)
+    PASS  25 C -> fan off
+
+[09:20] Priya arrives after 09:10
+           cloud <- LATE ENTRY      time 09:20  people=1
+    PASS  LATE ENTRY sent to cloud
+    PASS  attendance: 2 present, 1 late
+    PASS  people counter = 2
+
+[09:25] Arun opens the door, but his friend walks in behind him without a card
+           cloud <- LATE ENTRY      time 09:25  people=2
+           cloud <- TAILGATING      time 09:25  people=4
+    PASS  both are counted: people = 4
+    PASS  TAILGATING alarm
+    PASS  continuous alarm sound
+    PASS  TAILGATING sent to cloud
+
+[09:25] Teacher taps the ADMIN card to silence it
+    PASS  alarm stopped only by admin card
+
+[09:25] Kiran taps a valid card, but the room is full (4/4)
+    PASS  room is FULL
+           cloud <- DENIED-FULL     time 09:25  people=4
+    PASS  door stays locked
+    PASS  two short 'no' beeps
+    PASS  DENIED-FULL sent to cloud
+
+[09:25] Ravi presses the EXIT button and leaves
+    PASS  exit button opens the door
+    PASS  people = 3, room not full any more
+
+[10:00] A stranger uses Ravi's lost card: 3 wrong faces
+           cloud <- FACE LOCKOUT    time 10:00  people=3
+    PASS  door LOCKED for 30 s after 3 wrong faces
+    PASS  FACE LOCKOUT sent to cloud
+    PASS  even a correct face cannot open during lockout
+
+[10:00] Someone inside wants to go out during the lockout
+    PASS  EXIT button still works: nobody is ever trapped
+    PASS  lockout ends by itself after 30 s
+
+[10:00] Somebody taps an unknown card
+           cloud <- UNKNOWN CARD    time 10:00  people=3
+    PASS  door stays locked
+    PASS  two short 'no' beeps
+    PASS  UNKNOWN CARD sent to cloud
+
+[10:30] Priya goes out and leaves the door open
+    PASS  people = 2
+           cloud <- DOOR LEFT OPEN  time 10:30  people=2
+    PASS  after 20 s: 'close the door' beep every second
+    PASS  not a break-in (door was opened legally)
+    PASS  DOOR LEFT OPEN sent to cloud
+    PASS  door closed -> beeping stops
+
+[10:30] Air gets stuffy (many people breathing)
+    PASS  fresh-air vent ON
+    PASS  still ON until the air is really fresh
+    PASS  fresh again -> vent OFF
+    PASS  hot room, fan running
+
+[11:00] Dust puff: smoke sensor flickers for 1 second
+    PASS  glitch ignored: NO false fire alarm
+
+[11:00] Real smoke (lasts more than 3 s)
+           cloud <- FIRE            time 11:00  people=2
+    PASS  FIRE detected
+    PASS  door unlocked for escape
+    PASS  siren sound
+    PASS  fan OFF (fan would spread smoke)
+    PASS  lights ON to see the way out
+    PASS  FIRE sent to cloud
+
+[11:00] Everybody runs out
+           cloud <- EVACUATION DONE time 11:00  people=0
+    PASS  people = 0, no tailgating alarm in a fire
+    PASS  EVACUATION COMPLETE: the room is empty
+    PASS  EVACUATION DONE sent to cloud
+
+[11:00] Smoke clears
+    PASS  back to normal, door locked again
+
+[12:00] Wi-Fi goes down. One entry + 19 unknown-card taps happen
+    PASS  16 events kept safely in the chip memory
+    PASS  4 extra events counted as lost (never silently)
+
+[12:00] Wi-Fi comes back
+           cloud <- LATE ENTRY      time 12:00  people=0
+           cloud <- UNKNOWN CARD    time 12:00  people=1
+           cloud <- UNKNOWN CARD    time 12:00  people=1
+           cloud <- UNKNOWN CARD    time 12:00  people=1
+           cloud <- UNKNOWN CARD    time 12:00  people=1
+           cloud <- UNKNOWN CARD    time 12:00  people=1
+           cloud <- UNKNOWN CARD    time 12:00  people=1
+           cloud <- UNKNOWN CARD    time 12:00  people=1
+           cloud <- UNKNOWN CARD    time 12:00  people=1
+           cloud <- UNKNOWN CARD    time 12:00  people=1
+           cloud <- UNKNOWN CARD    time 12:00  people=1
+           cloud <- UNKNOWN CARD    time 12:00  people=1
+           cloud <- UNKNOWN CARD    time 12:00  people=1
+           cloud <- UNKNOWN CARD    time 12:00  people=1
+           cloud <- UNKNOWN CARD    time 12:00  people=1
+           cloud <- UNKNOWN CARD    time 12:00  people=1
+    PASS  all 16 stored events reach the cloud
+    PASS  in the right order, with the right time (12:00 entry first)
+    PASS  1 person inside: lights on, fan on
+
+[16:00] Last person leaves and forgets the lights and fan
+    PASS  room empty, lights still on for a minute
+    PASS  after 60 s: lights and fan OFF by themselves
+
+[22:30] Night. A student taps a valid card
+    PASS  night lock is ON (22:00-06:00)
+           cloud <- DENIED-NIGHT    time 22:30  people=0
+    PASS  normal cards don't work at night
+    PASS  DENIED-NIGHT sent to cloud
+
+[22:30] Movement inside the EMPTY room
+           cloud <- INTRUDER        time 22:30  people=0
+    PASS  INTRUDER alarm
+    PASS  lights flash ON (scare intruder, help camera)
+    PASS  INTRUDER sent to cloud
+    PASS  admin card silences it
+
+[23:00] Someone forces the locked door open
+           cloud <- DOOR FORCED     time 23:00  people=0
+    PASS  DOOR FORCED alarm
+    PASS  continuous alarm sound
+    PASS  DOOR FORCED sent to cloud
+    PASS  admin card silences it
+
+[23:00] A person inside feels unsafe and presses the PANIC button
+           cloud <- PANIC / SOS     time 23:00  people=0
+    PASS  PANIC alarm
+    PASS  PANIC / SOS sent to cloud
+
+[23:00] Gas leak
+           cloud <- GAS LEAK        time 23:00  people=0
+    PASS  GAS detected, door unlocked
+    PASS  exhaust vent ON, fan OFF (no sparks)
+    PASS  siren sound
+    PASS  GAS LEAK sent to cloud
+    PASS  gas gone, back to normal
+
+[23:00] ESP32 board freezes (no heartbeat)
+           cloud <- ESP32 DOWN      time 23:00  people=0
+    PASS  chip notices ESP32 is DOWN within 10 s
+    PASS  ESP32 DOWN event stored
+    PASS  safety still works without the ESP32 (exit opens)
+    PASS  ESP32 back -> fault clears
+
+[23:00] End of the day
+    PASS  today: 4 entries, 3 late
+    PASS  midnight: counters reset for the new day
+
+==============================================================
+  Events sent to cloud: 32    lost while Wi-Fi was down: 4
+  ALL 88 TESTS PASSED
+==============================================================
+tb/tb_smart_room.sv:414: $finish called at 227465000 (1ps)

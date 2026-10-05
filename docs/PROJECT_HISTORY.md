@@ -1,5 +1,14 @@
 # Project history — versions, bugs and their real root causes (keep adding at the top)
 
+## VLSI: Smart Room Controller chip (2026-10-05)
+- NEW: SystemVerilog hardware controller for door safety, synthesized for Artix-7 FPGA (xc7a35t). 10 modules: tick_gen, sync_edge,
+  debounce, door_fsm (finite state machine), people_counter (bidirectional beams + tailgating), room_comfort (fan/lights/vent),
+  event_logger (16-entry FIFO priority queue), buzzer (5 sounds), smart_room_top (integration). 88-check self-checking testbench
+  simulates one full day (08:50-23:00) with all edge cases. Verified in Verilator (lint-clean), Icarus Verilog (all PASS), ready for
+  Vivado xsim. One-click setup via create_project.tcl. Mutation testing: 8 deliberately injected bugs, all caught by testbench.
+  Honest limits: simulation only (FPGA board not yet wired); light beams, motion, gas, temp, air sensors are mocked; one "second" =
+  100 clock cycles in test (real = 100 MHz).
+
 ## Firmware 8.2.5 / Sheet script (2026-10-03)
 - Board->Sheet POST showed "code 400": HTTPClient follows HTTP 302 even in STRICT mode (rewrites POST to GET) and lands on a
   Google 400 page although doPost already ran -> board retried forever. FIX: POST uses HTTPC_DISABLE_FOLLOW_REDIRECTS, 302 = success.
