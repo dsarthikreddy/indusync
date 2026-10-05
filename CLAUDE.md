@@ -25,7 +25,7 @@ Major project = IoT smart door/attendance system + VLSI designs (Cadence Virtuos
 | WhatsApp (Meta Cloud API test number) | NOT set up — Meta OTP never arrived; postponed |
 | MacroDroid on Pixel (Telegram notif -> Discord webhook + SMS) | optional, outside this repo |
 | VLSI: 2.4 GHz LNA, 13.56 MHz LNA, 4-bit R-2R DAC (Cadence) | DONE (exports to be added in vlsi/) |
-| VLSI: Smart Room Controller (Vivado, SystemVerilog, xsim) | DONE — 88-test safety chip, Artix-7 target, all simulators green |
+| VLSI: Smart Room Controller (Vivado, SystemVerilog, xsim) | DONE + VERIFIED in Vivado 2026.1: 88/88 tests pass, implemented on xc7a35t, WNS +4.565 ns @100 MHz, 378 LUT / 383 FF, 0.075 W (no real board yet) |
 Firmware version on the board: **8.2.5** (string "version" in /api/door and Firestore devices/door-1).
 
 ## 2. Where things live

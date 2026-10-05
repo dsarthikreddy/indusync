@@ -6,6 +6,9 @@
   event_logger (16-entry FIFO priority queue), buzzer (5 sounds), smart_room_top (integration). 88-check self-checking testbench
   simulates one full day (08:50-23:00) with all edge cases. Verified in Verilator (lint-clean), Icarus Verilog (all PASS), ready for
   Vivado xsim. One-click setup via create_project.tcl. Mutation testing: 8 deliberately injected bugs, all caught by testbench.
+  VERIFIED on the owner's laptop in Vivado 2026.1 (free BASIC licence): ALL 88 TESTS PASSED, implementation OK, WNS +4.565 ns at
+  100 MHz, 378 LUTs, 383 FFs, 0.075 W. Setup notes: extracting the ZIP created a nested folder Smart_Room_Controller\Smart_Room_Controller
+  (cd into the inner one); the Timing/Utilization menu items stay greyed out until an implemented design is open.
   Honest limits: simulation only (FPGA board not yet wired); light beams, motion, gas, temp, air sensors are mocked; one "second" =
   100 clock cycles in test (real = 100 MHz).
 

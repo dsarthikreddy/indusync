@@ -3,7 +3,9 @@
 No board, no wires, no components. Everything runs inside Vivado's free simulator.
 Tested before delivery: **ALL 88 TESTS PASSED** in two different simulators (Verilator and Icarus), zero
 warnings from a strict code checker, and 8 deliberately broken versions were all caught by the test.
-Not tested here: Vivado itself (it cannot run in this cloud machine). The code uses only standard SystemVerilog that Vivado supports.
+**Verified in Vivado 2026.1 on the owner's laptop (2026-10-05):** ALL 88 TESTS PASSED in xsim, synthesis + implementation
+completed for xc7a35tcpg236-1, timing met at 100 MHz (WNS +4.565 ns, WHS +0.028 ns, 0 failing endpoints of 648),
+378 Slice LUTs (2 %), 383 Slice Registers (1 %), estimated power 0.075 W. Not tested: a real FPGA board (no bitstream, no pins assigned).
 
 ---
 
