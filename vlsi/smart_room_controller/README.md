@@ -179,6 +179,8 @@ If a screen name is slightly different in your version, choose the option that s
 
 ![one day waveform](docs/waveform_one_day.png)
 
+All 41 signals in one big picture: `docs/waveform_all_signals.png` (also `.svg`). It is rendered from the testbench simulation data, so it is a summary plot; the real Vivado waveform is the one in the Vivado window / `.wdb` file.
+
 How to read it: a green block on *door unlocked* = door open. *people inside* goes 1 → 2 → 4 → 3 → 2 → 0.
 At 11:00 *fire* goes high, *door unlocked* stays high, *fan speed* drops to 0, then *evacuation done* rises
 when people reaches 0. At 22:00–23:00 the red spikes are the intruder, forced-door and panic alarms.
