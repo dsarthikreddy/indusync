@@ -9,6 +9,9 @@
   VERIFIED on the owner's laptop in Vivado 2026.1 (free BASIC licence): ALL 88 TESTS PASSED, implementation OK, WNS +4.565 ns at
   100 MHz, 378 LUTs, 383 FFs, 0.075 W. Setup notes: extracting the ZIP created a nested folder Smart_Room_Controller\Smart_Room_Controller
   (cd into the inner one); the Timing/Utilization menu items stay greyed out until an implemented design is open.
+  College Linux PCs have Vivado 2014.4 (no real SystemVerilog support): added vlsi/smart_room_controller/verilog2001/ = same design converted with
+  sv2v to plain Verilog-2005 (+ hand-fixed testbench strings and 2 constant expressions in event_logger). Icarus -g2005 and Verilator both print
+  ALL 88 TESTS PASSED, output identical to expected_output.txt. NOT tested in Vivado 2014.4 itself.
   Honest limits: simulation only (FPGA board not yet wired); light beams, motion, gas, temp, air sensors are mocked; one "second" =
   100 clock cycles in test (real = 100 MHz).
 

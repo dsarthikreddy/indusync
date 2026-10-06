@@ -107,6 +107,10 @@ continuous = security alarm · on/off siren = fire or gas.
 
 ---
 
+**Old Vivado (2014.x on college Linux PCs)?** Use the plain-Verilog copy in `verilog2001/` and read `verilog2001/README_OLD_VIVADO.md`.
+
+---
+
 ## 4. Install Vivado (one time, free)
 
 1. Go to **amd.com**, top-right **Sign In** → **Create account** (free). Verify your e-mail.
