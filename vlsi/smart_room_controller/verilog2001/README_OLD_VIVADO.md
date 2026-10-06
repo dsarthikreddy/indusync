@@ -51,6 +51,12 @@ vivado &
 - **Size and speed:** **Add Sources -> Add or Create Constraints** -> `../constraints/clock.xdc`; then **Run Synthesis**; open the synthesized design; **Report Utilization** and **Report Timing Summary**.
 - Write your own small module (counter, enum-style FSM) with its own testbench using the same steps.
 
+## 8. If the compile fails ("compile step failed", VRFC errors)
+"module ... ignored due to previous errors" is NOT the real error. Find the FIRST error:
+1. Open the **Log** tab (or **Tcl Console**) at the bottom and scroll up to the first line that starts with `ERROR: [VRFC ...`.
+2. Or open the file `<project folder>/smart_room.sim/sim_1/behav/xvlog.log` and read the first `ERROR`.
+3. Take a photo of that first error (it names the file and line number) and send it to Claude.
+
 ## 8. Known differences
 - Output text is identical to the SystemVerilog run (`../docs/expected_output.txt`); numbers of LUTs may differ slightly in old Vivado.
 - Do not edit the converted files and the `.sv` originals at the same time: pick one set.

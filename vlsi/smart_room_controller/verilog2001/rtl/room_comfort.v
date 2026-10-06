@@ -37,11 +37,11 @@ module room_comfort (
 	wire active;
 	wire [1:0] up_lvl;
 	wire [1:0] dn_lvl;
-	function automatic signed [8:0] sv2v_cast_9_signed;
+	function signed [8:0] sv2v_cast_9_signed;
 		input reg signed [8:0] inp;
 		sv2v_cast_9_signed = inp;
 	endfunction
-	function automatic [1:0] level;
+	function [1:0] level;
 		input reg [8:0] t;
 		if (t >= sv2v_cast_9_signed(T3))
 			level = 2'd3;
@@ -57,13 +57,13 @@ module room_comfort (
 	assign active = idle_t != 8'd0;
 	assign lights_on = fire || active;
 	assign vent_on = !fire && (gas || air_bad);
-	function automatic signed [7:0] sv2v_cast_8_signed;
+	function signed [7:0] sv2v_cast_8_signed;
 		input reg signed [7:0] inp;
 		sv2v_cast_8_signed = inp;
 	endfunction
 	always @(posedge clk or negedge rst_n)
 		if (!rst_n) begin
-			idle_t <= 1'sb0;
+			idle_t <= 1'b0;
 			air_bad <= 1'b0;
 			fan_speed <= 2'd0;
 		end

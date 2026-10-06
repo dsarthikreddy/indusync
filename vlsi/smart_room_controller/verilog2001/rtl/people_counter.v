@@ -35,7 +35,7 @@ module people_counter (
 	wire b;
 	assign a = beam_out;
 	assign b = beam_in;
-	function automatic signed [5:0] sv2v_cast_6_signed;
+	function signed [5:0] sv2v_cast_6_signed;
 		input reg signed [5:0] inp;
 		sv2v_cast_6_signed = inp;
 	endfunction
@@ -96,15 +96,15 @@ module people_counter (
 				default: st <= 3'd0;
 			endcase
 		end
-	function automatic signed [7:0] sv2v_cast_8_signed;
+	function signed [7:0] sv2v_cast_8_signed;
 		input reg signed [7:0] inp;
 		sv2v_cast_8_signed = inp;
 	endfunction
 	always @(posedge clk or negedge rst_n)
 		if (!rst_n) begin
-			people <= 1'sb0;
-			credits <= 1'sb0;
-			credit_t <= 1'sb0;
+			people <= 1'b0;
+			credits <= 1'b0;
+			credit_t <= 1'b0;
 			tailgate <= 1'b0;
 		end
 		else begin
@@ -130,7 +130,7 @@ module people_counter (
 			else if (tick && (credit_t != 8'd0)) begin
 				credit_t <= credit_t - 8'd1;
 				if (credit_t == 8'd1)
-					credits <= 1'sb0;
+					credits <= 1'b0;
 			end
 		end
 endmodule

@@ -12,6 +12,7 @@
   College Linux PCs have Vivado 2014.4 (no real SystemVerilog support): added vlsi/smart_room_controller/verilog2001/ = same design converted with
   sv2v to plain Verilog-2005 (+ hand-fixed testbench strings and 2 constant expressions in event_logger). Icarus -g2005 and Verilator both print
   ALL 88 TESTS PASSED, output identical to expected_output.txt. NOT tested in Vivado 2014.4 itself.
+  First try on 2014.4 failed to compile event_logger.v (real first error not seen yet); hardened: removed sv2v helper reg _sv2v_0, $clog2 -> own clog2 function, 1'sb0 -> 1'b0, no 'automatic' functions.
   Honest limits: simulation only (FPGA board not yet wired); light beams, motion, gas, temp, air sensors are mocked; one "second" =
   100 clock cycles in test (real = 100 MHz).
 

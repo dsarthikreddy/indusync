@@ -46,7 +46,6 @@ module smart_room_top (
 	ev_count,
 	ev_lost
 );
-	reg _sv2v_0;
 	parameter signed [31:0] CLKS_PER_SEC = 100000000;
 	parameter signed [31:0] MAX_PEOPLE = 40;
 	parameter signed [31:0] CLASS_START_MIN = 540;
@@ -58,6 +57,15 @@ module smart_room_top (
 	parameter signed [31:0] ESP_TIMEOUT_S = 10;
 	parameter signed [31:0] EMPTY_OFF_S = 60;
 	parameter signed [31:0] EVENT_DEPTH = 16;
+	function integer clog2;
+		input integer value;
+		integer v;
+		begin
+			v = value - 1;
+			for (clog2 = 0; v > 0; clog2 = clog2 + 1)
+				v = v >> 1;
+		end
+	endfunction
 	input wire clk;
 	input wire rst_n;
 	input wire card_tap;
@@ -100,7 +108,7 @@ module smart_room_top (
 	output reg [7:0] late_today;
 	output wire ev_valid;
 	output wire [23:0] ev_data;
-	output wire [$clog2(EVENT_DEPTH):0] ev_count;
+	output wire [clog2(EVENT_DEPTH):0] ev_count;
 	output wire [7:0] ev_lost;
 	localparam signed [31:0] DEB_N = ((CLKS_PER_SEC / 50) > 0 ? CLKS_PER_SEC / 50 : 1);
 	wire tick;
@@ -278,26 +286,26 @@ module smart_room_top (
 	wire day_reset;
 	always @(posedge clk or negedge rst_n)
 		if (!rst_n) begin
-			hr <= 1'sb0;
-			mn <= 1'sb0;
-			tod_q <= 1'sb0;
+			hr <= 1'b0;
+			mn <= 1'b0;
+			tod_q <= 1'b0;
 		end
 		else begin
 			hr <= hour;
 			mn <= minute;
 			tod_q <= tod;
 		end
-	function automatic [10:0] sv2v_cast_11;
+	function [10:0] sv2v_cast_11;
 		input reg [10:0] inp;
 		sv2v_cast_11 = inp;
 	endfunction
 	assign tod = (sv2v_cast_11(hr) * 11'd60) + sv2v_cast_11(mn);
-	function automatic signed [4:0] sv2v_cast_5_signed;
+	function signed [4:0] sv2v_cast_5_signed;
 		input reg signed [4:0] inp;
 		sv2v_cast_5_signed = inp;
 	endfunction
 	assign night_mode = (hr >= sv2v_cast_5_signed(NIGHT_START_H)) || (hr < sv2v_cast_5_signed(NIGHT_END_H));
-	function automatic signed [10:0] sv2v_cast_11_signed;
+	function signed [10:0] sv2v_cast_11_signed;
 		input reg signed [10:0] inp;
 		sv2v_cast_11_signed = inp;
 	endfunction
@@ -394,20 +402,20 @@ module smart_room_top (
 	assign security_alarm = |alarm_flags;
 	reg [7:0] hb_t;
 	reg ev_esp;
-	function automatic signed [7:0] sv2v_cast_8_signed;
+	function signed [7:0] sv2v_cast_8_signed;
 		input reg signed [7:0] inp;
 		sv2v_cast_8_signed = inp;
 	endfunction
 	always @(posedge clk or negedge rst_n)
 		if (!rst_n) begin
-			hb_t <= 1'sb0;
+			hb_t <= 1'b0;
 			esp_fault <= 1'b0;
 			ev_esp <= 1'b0;
 		end
 		else begin
 			ev_esp <= 1'b0;
 			if (hb_r) begin
-				hb_t <= 1'sb0;
+				hb_t <= 1'b0;
 				esp_fault <= 1'b0;
 			end
 			else if (tick && !esp_fault) begin
@@ -421,12 +429,12 @@ module smart_room_top (
 		end
 	always @(posedge clk or negedge rst_n)
 		if (!rst_n) begin
-			present_today <= 1'sb0;
-			late_today <= 1'sb0;
+			present_today <= 1'b0;
+			late_today <= 1'b0;
 		end
 		else if (day_reset) begin
-			present_today <= 1'sb0;
-			late_today <= 1'sb0;
+			present_today <= 1'b0;
+			late_today <= 1'b0;
 		end
 		else if (grant) begin
 			if (present_today != 8'hff)
@@ -477,9 +485,7 @@ module smart_room_top (
 	localparam [3:0] smart_room_pkg_EV_TAILGATE = 4'd9;
 	localparam [3:0] smart_room_pkg_EV_UNKNOWN = 4'd5;
 	always @(*) begin
-		if (_sv2v_0)
-			;
-		ev_req = 1'sb0;
+		ev_req = 1'b0;
 		ev_req[smart_room_pkg_EV_ENTRY] = grant && !is_late;
 		ev_req[smart_room_pkg_EV_LATE] = grant && is_late;
 		ev_req[smart_room_pkg_EV_DENY_FULL] = ev_full;
@@ -511,5 +517,4 @@ module smart_room_top (
 	);
 	wire unused_ok;
 	assign unused_ok = &{1'b0, tap_l, fok_l, fbad_l, hb_l, ack_l, known_r, admin_r, pass_in, pass_out};
-	initial _sv2v_0 = 0;
 endmodule

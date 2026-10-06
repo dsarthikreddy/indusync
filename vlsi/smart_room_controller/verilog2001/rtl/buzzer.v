@@ -12,7 +12,6 @@ module buzzer (
 	buzz,
 	mode
 );
-	reg _sv2v_0;
 	input wire clk;
 	input wire rst_n;
 	input wire beat;
@@ -31,8 +30,8 @@ module buzzer (
 	localparam [2:0] smart_room_pkg_BZ_OK = 3'd1;
 	always @(posedge clk or negedge rst_n)
 		if (!rst_n) begin
-			phase <= 1'sb0;
-			shot_t <= 1'sb0;
+			phase <= 1'b0;
+			shot_t <= 1'b0;
 			shot <= smart_room_pkg_BZ_OFF;
 		end
 		else begin
@@ -56,8 +55,6 @@ module buzzer (
 	localparam [2:0] smart_room_pkg_BZ_SIREN = 3'd5;
 	localparam [2:0] smart_room_pkg_BZ_WARN = 3'd3;
 	always @(*) begin
-		if (_sv2v_0)
-			;
 		if (siren) begin
 			mode = smart_room_pkg_BZ_SIREN;
 			buzz = phase < 4'd5;
@@ -79,5 +76,4 @@ module buzzer (
 			endcase
 		end
 	end
-	initial _sv2v_0 = 0;
 endmodule

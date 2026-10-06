@@ -13,8 +13,16 @@ module event_logger (
 	ev_count,
 	ev_lost
 );
-	reg _sv2v_0;
 	parameter signed [31:0] DEPTH = 16;
+	function integer clog2;
+		input integer value;
+		integer v;
+		begin
+			v = value - 1;
+			for (clog2 = 0; v > 0; clog2 = clog2 + 1)
+				v = v >> 1;
+		end
+	endfunction
 	input wire clk;
 	input wire rst_n;
 	input wire [15:0] ev_req;
@@ -24,9 +32,9 @@ module event_logger (
 	input wire ev_ack;
 	output wire ev_valid;
 	output wire [23:0] ev_data;
-	output reg [$clog2(DEPTH):0] ev_count;
+	output reg [clog2(DEPTH):0] ev_count;
 	output reg [7:0] ev_lost;
-	localparam signed [31:0] AW = $clog2(DEPTH);
+	localparam signed [31:0] AW = clog2(DEPTH);
 	localparam [AW:0] FULL_CNT = DEPTH;
 	localparam [AW:0] ONE_CNT = {{AW {1'b0}}, 1'b1};
 	reg [23:0] mem [0:DEPTH - 1];
@@ -38,13 +46,11 @@ module event_logger (
 	reg any;
 	wire do_pop;
 	wire do_push;
-	function automatic signed [3:0] sv2v_cast_4_signed;
+	function signed [3:0] sv2v_cast_4_signed;
 		input reg signed [3:0] inp;
 		sv2v_cast_4_signed = inp;
 	endfunction
 	always @(*) begin
-		if (_sv2v_0)
-			;
 		sel = 4'd0;
 		any = 1'b0;
 		begin : sv2v_autoblock_1
@@ -57,9 +63,7 @@ module event_logger (
 		end
 	end
 	always @(*) begin
-		if (_sv2v_0)
-			;
-		clr = 1'sb0;
+		clr = 1'b0;
 		begin : sv2v_autoblock_2
 			reg signed [31:0] i;
 			for (i = 1; i < 16; i = i + 1)
@@ -73,17 +77,17 @@ module event_logger (
 	always @(posedge clk)
 		if (do_push)
 			mem[wp] <= {sel, hour, minute, people, 3'b000};
-	function automatic signed [AW - 1:0] sv2v_cast_DE851_signed;
+	function signed [AW - 1:0] sv2v_cast_DE851_signed;
 		input reg signed [AW - 1:0] inp;
 		sv2v_cast_DE851_signed = inp;
 	endfunction
 	always @(posedge clk or negedge rst_n)
 		if (!rst_n) begin
-			wp <= 1'sb0;
-			rp <= 1'sb0;
-			ev_count <= 1'sb0;
-			ev_lost <= 1'sb0;
-			pend <= 1'sb0;
+			wp <= 1'b0;
+			rp <= 1'b0;
+			ev_count <= 1'b0;
+			ev_lost <= 1'b0;
+			pend <= 1'b0;
 		end
 		else begin
 			pend <= (pend & ~clr) | ev_req[15:1];
@@ -102,5 +106,4 @@ module event_logger (
 		end
 	wire unused_ok;
 	assign unused_ok = ev_req[0];
-	initial _sv2v_0 = 0;
 endmodule

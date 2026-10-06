@@ -65,19 +65,19 @@ module door_fsm (
 	assign door_open = ~door_closed;
 	assign unlock = ((state == 2'd2) || (exit_t != 8'd0)) || emergency;
 	assign locked_out = state == 2'd3;
-	function automatic signed [7:0] sv2v_cast_8_signed;
+	function signed [7:0] sv2v_cast_8_signed;
 		input reg signed [7:0] inp;
 		sv2v_cast_8_signed = inp;
 	endfunction
-	function automatic signed [1:0] sv2v_cast_2_signed;
+	function signed [1:0] sv2v_cast_2_signed;
 		input reg signed [1:0] inp;
 		sv2v_cast_2_signed = inp;
 	endfunction
 	always @(posedge clk or negedge rst_n)
 		if (!rst_n) begin
 			state <= 2'd0;
-			timer <= 1'sb0;
-			tries <= 1'sb0;
+			timer <= 1'b0;
+			tries <= 1'b0;
 			grant <= 1'b0;
 			deny <= 1'b0;
 			ev_unknown <= 1'b0;
@@ -94,7 +94,7 @@ module door_fsm (
 			ev_lockout <= 1'b0;
 			if (emergency) begin
 				state <= 2'd0;
-				timer <= 1'sb0;
+				timer <= 1'b0;
 			end
 			else
 				case (state)
@@ -121,7 +121,7 @@ module door_fsm (
 						if (face_ok) begin
 							state <= 2'd2;
 							timer <= sv2v_cast_8_signed(OPEN_S);
-							tries <= 1'sb0;
+							tries <= 1'b0;
 							grant <= 1'b1;
 						end
 						else if (face_bad) begin
@@ -129,7 +129,7 @@ module door_fsm (
 							if (tries == sv2v_cast_2_signed(MAX_TRIES - 1)) begin
 								state <= 2'd3;
 								timer <= sv2v_cast_8_signed(LOCKOUT_S);
-								tries <= 1'sb0;
+								tries <= 1'b0;
 								ev_lockout <= 1'b1;
 							end
 							else
@@ -138,7 +138,7 @@ module door_fsm (
 						else if (tick) begin
 							if (timer <= 8'd1) begin
 								state <= 2'd0;
-								timer <= 1'sb0;
+								timer <= 1'b0;
 							end
 							else
 								timer <= timer - 8'd1;
@@ -147,7 +147,7 @@ module door_fsm (
 						if (tick) begin
 							if (timer <= 8'd1) begin
 								state <= 2'd0;
-								timer <= 1'sb0;
+								timer <= 1'b0;
 							end
 							else
 								timer <= timer - 8'd1;
@@ -158,7 +158,7 @@ module door_fsm (
 						if (tick) begin
 							if (timer <= 8'd1) begin
 								state <= 2'd0;
-								timer <= 1'sb0;
+								timer <= 1'b0;
 							end
 							else
 								timer <= timer - 8'd1;
@@ -169,8 +169,8 @@ module door_fsm (
 		end
 	always @(posedge clk or negedge rst_n)
 		if (!rst_n) begin
-			exit_t <= 1'sb0;
-			held_t <= 1'sb0;
+			exit_t <= 1'b0;
+			held_t <= 1'b0;
 			held_warn <= 1'b0;
 			door_was_open <= 1'b0;
 			ev_forced <= 1'b0;
@@ -185,7 +185,7 @@ module door_fsm (
 			else if (tick && (exit_t != 8'd0))
 				exit_t <= exit_t - 8'd1;
 			if (!door_open || emergency) begin
-				held_t <= 1'sb0;
+				held_t <= 1'b0;
 				held_warn <= 1'b0;
 			end
 			else if (tick && !held_warn) begin
